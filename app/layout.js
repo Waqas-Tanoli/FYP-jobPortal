@@ -3,6 +3,7 @@ import "@fortawesome/fontawesome-free/css/all.min.css";
 
 import "./globals.css";
 import PreHeader from "@/components/PreHeader";
+import Header from "@/components/Header";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,6 +17,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <body className={inter.className}>
         <PreHeader />
+        <Header />
 
         {children}
       </body>
