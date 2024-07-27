@@ -28,11 +28,11 @@ const PreHeader = () => {
             placeholder="Search by location"
             className="p-2 outline-none flex-grow border-b md:border-b-0 md:border-r border-gray-300"
           />
-          <button className="flex items-center justify-center p-2 text-black hover:bg-gray-300 md:w-12">
+          <button className="flex items-center justify-center p-2 text-black hover:bg-gray-300  hover:scale-105 transition-all ease-in-out md:w-12">
             <i className="fas fa-search text-sm md:text-base"></i>
           </button>
         </div>
-        <button className="bg-[#040c1b] hover:bg-gray-800 hover:text-white text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-4 md:mt-0">
+        <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow mt-4 md:mt-0">
           Advanced
         </button>
       </div>

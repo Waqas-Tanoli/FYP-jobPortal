@@ -39,13 +39,13 @@ const Header = () => {
 
       {/* Right side three buttons */}
       <div className="flex gap-9 mr-5">
-        <button className="bg-[#040c1b] hover:bg-gray-800 hover:text-white text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow ">
+        <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow ">
           For Employers
         </button>
-        <button className="bg-[#040c1b] hover:bg-gray-800 hover:text-white text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+        <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
           Log in
         </button>
-        <button className="bg-[#040c1b] hover:bg-gray-800 hover:text-white text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+        <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
           Sign up
         </button>
       </div>
