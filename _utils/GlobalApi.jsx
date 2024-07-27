@@ -11,6 +11,9 @@ const axoisClient = axios.create({
 });
 
 const getCompany = () => axoisClient.get("companies?populate=*");
+
+const getReviewCards = () => axoisClient.get("review-cards?populate=*");
 export default {
   getCompany,
+  getReviewCards,
 };

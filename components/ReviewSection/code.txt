@@ -1,0 +1,48 @@
+{/**
+     <div>
+      {Array.isArray(reviews) && reviews.length > 0 ? (
+        reviews.map((item, index) => {
+          // Extract the review text
+          const reviewText = item.attributes?.Review?.map(
+            (r) => r.children[0]?.text
+          ).join(" ");
+
+          return (
+
+
+
+            
+            <div
+              key={index}
+              style={{
+                marginBottom: "16px",
+                border: "1px solid #ddd",
+                borderRadius: "8px",
+                padding: "16px",
+                background: "#fff",
+              }}
+            >
+              <Image
+                src={item.attributes?.Picture?.data?.attributes?.url}
+                alt="User Image"
+                width={60}
+                height={60}
+                style={{ borderRadius: "50%" }}
+              />
+              <p style={{ fontWeight: "bold", marginTop: "8px" }}>
+                {item.attributes?.Name}
+              </p>
+              <p>{reviewText}</p>
+              <p style={{ fontStyle: "italic", color: "#555" }}>
+                {item.attributes?.Country}
+              </p>
+            </div>
+          );
+        })
+      ) : (
+        <p>No Data Found</p>
+      )}
+    </div>
+    
+    
+    */}

@@ -1,0 +1,36 @@
+{
+  "kind": "collectionType",
+  "collectionName": "review_cards",
+  "info": {
+    "singularName": "review-card",
+    "pluralName": "review-cards",
+    "displayName": "ReviewCard",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "Name": {
+      "type": "string",
+      "required": true
+    },
+    "Review": {
+      "type": "blocks",
+      "required": true
+    },
+    "Picture": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "Country": {
+      "type": "string",
+      "required": true
+    }
+  }
+}

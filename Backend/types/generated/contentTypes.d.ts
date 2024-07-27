@@ -983,6 +983,40 @@ export interface ApiJobJob extends Schema.CollectionType {
   };
 }
 
+export interface ApiReviewCardReviewCard extends Schema.CollectionType {
+  collectionName: 'review_cards';
+  info: {
+    singularName: 'review-card';
+    pluralName: 'review-cards';
+    displayName: 'ReviewCard';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Name: Attribute.String & Attribute.Required;
+    Review: Attribute.Blocks & Attribute.Required;
+    Picture: Attribute.Media<'images'>;
+    Country: Attribute.String & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::review-card.review-card',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::review-card.review-card',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface ApiTagTag extends Schema.CollectionType {
   collectionName: 'tags';
   info: {
@@ -1028,6 +1062,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
       'api::company.company': ApiCompanyCompany;
       'api::job.job': ApiJobJob;
+      'api::review-card.review-card': ApiReviewCardReviewCard;
       'api::tag.tag': ApiTagTag;
     }
   }
