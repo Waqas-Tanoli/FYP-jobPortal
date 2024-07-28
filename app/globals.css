@@ -3,5 +3,19 @@
 @tailwind utilities;
 
 body {
-  @apply font-sans;
+  font-family: "Roboto", sans-serif;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Montserrat", sans-serif;
+}
+
+.custom-heading {
+  font-family: "Edu AU VIC WA NT Hand", cursive;
+}
+
+code {
+  font-family: "Ubuntu Mono", monospace;
 }

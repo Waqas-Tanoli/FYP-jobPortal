@@ -13,7 +13,7 @@ const HowDifferent = () => {
             <div className="flex flex-col justify-between h-full">
               <div className="flex flex-col space-y-6">
                 <div className="flex items-start text-lg">
-                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-2xl" />
+                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-5xl" />
                   <div>
                     <h1 className="text-2xl font-semibold mb-3">
                       Higher Quality Listings
@@ -25,7 +25,7 @@ const HowDifferent = () => {
                   </div>
                 </div>
                 <div className="flex items-start text-lg">
-                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-2xl" />
+                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-5xl" />
                   <div>
                     <h1 className="text-2xl font-semibold mb-3">
                       Unlimited Job Search Resource
@@ -38,7 +38,7 @@ const HowDifferent = () => {
                   </div>
                 </div>
                 <div className="flex items-start text-lg">
-                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-2xl" />
+                  <FaCheckCircle className="text-green-500 mr-3 mt-1 text-5xl" />
                   <div>
                     <h1 className="text-2xl font-semibold mb-3">Save Time</h1>
                     <p className="text-gray-600 text-lg">
@@ -48,7 +48,7 @@ const HowDifferent = () => {
                   </div>
                 </div>
               </div>
-              <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white py-2 px-20 rounded  self-center text-xl tracking-wider">
+              <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white py-2 px-20 rounded self-center text-xl tracking-wider mt-5">
                 Get Started
               </button>
             </div>
@@ -56,7 +56,6 @@ const HowDifferent = () => {
         </div>
         <div className="flex justify-center md:w-1/3">
           <div className="relative w-full h-[600px]">
-            {" "}
             {/* Container for the image */}
             <Image
               src="/how-different.png"
