@@ -49,7 +49,7 @@ const ReviewCards = () => {
 
             return (
               <SwiperSlide key={index}>
-                <div className=" p-3 bg-white flex flex-col justify-between h-full">
+                <div className=" p-3 bg-white flex flex-col justify-between h-full ">
                   <div className="flex-1">
                     <p className="text-sm mb-2">{reviewText}</p>
                   </div>
