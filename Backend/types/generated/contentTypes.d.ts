@@ -807,7 +807,6 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
     slogan: Attribute.Text &
       Attribute.Required &
       Attribute.SetMinMaxLength<{
-        minLength: 20;
         maxLength: 180;
       }>;
     website: Attribute.String;

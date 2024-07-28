@@ -39,8 +39,7 @@
     "slogan": {
       "type": "text",
       "required": true,
-      "maxLength": 180,
-      "minLength": 20
+      "maxLength": 180
     },
     "website": {
       "type": "string"
