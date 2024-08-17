@@ -24,11 +24,11 @@
       ],
       "default": "skill"
     },
-    "jobs": {
+    "job": {
       "type": "relation",
-      "relation": "manyToMany",
+      "relation": "manyToOne",
       "target": "api::job.job",
-      "mappedBy": "skillsTags"
+      "inversedBy": "skills_tags"
     }
   }
 }

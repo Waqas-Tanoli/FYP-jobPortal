@@ -46,3 +46,36 @@
     
     
     */}
+
+
+
+    // Authentication Endpoints
+const register = async (username, email, password) => {
+  try {
+    const response = await axiosClient.post("/auth/local/register", {
+      username,
+      email,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Registration failed");
+  }
+};
+
+const login = async (identifier, password) => {
+  try {
+    const response = await axiosClient.post("/auth/local", {
+      identifier,
+      password,
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error(error.response?.data?.message || "Login failed");
+  }
+};
+
+const logout = () => {
+  // Simply remove JWT from local storage or any other storage method you're using
+  localStorage.removeItem("jwt");
+};

@@ -742,7 +742,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
   options: {
     draftAndPublish: false;
-    timestamps: true;
   };
   attributes: {
     username: Attribute.String &
@@ -771,6 +770,7 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
+    profilePicture: Attribute.Media<'images'> & Attribute.Required;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -800,7 +800,7 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
     draftAndPublish: true;
   };
   attributes: {
-    companyName: Attribute.String & Attribute.Required & Attribute.Unique;
+    name: Attribute.String & Attribute.Required & Attribute.Unique;
     City: Attribute.String;
     logo: Attribute.Media<'images'> & Attribute.Required;
     coverImage: Attribute.Media<'images'> & Attribute.Required;
@@ -810,9 +810,9 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
         maxLength: 180;
       }>;
     website: Attribute.String;
-    slug: Attribute.UID<'api::company.company', 'companyName'> &
-      Attribute.Required;
-    jobs: Attribute.Relation<
+    slug: Attribute.UID & Attribute.Required;
+    description: Attribute.Blocks;
+    company: Attribute.Relation<
       'api::company.company',
       'oneToMany',
       'api::job.job'
@@ -852,21 +852,14 @@ export interface ApiJobJob extends Schema.CollectionType {
     };
   };
   attributes: {
-    Title: Attribute.String &
+    title: Attribute.String &
       Attribute.Required &
-      Attribute.Unique &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
     remoteOk: Attribute.Boolean &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    featuredJob: Attribute.Boolean &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -892,31 +885,13 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    applicationLink: Attribute.String &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
     jobDescripiton: Attribute.Blocks &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
-    aboutYou: Attribute.Blocks &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
     jobResponsibilities: Attribute.Blocks &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    remunerationPackage: Attribute.Blocks &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -944,26 +919,21 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    slug: Attribute.UID<'api::job.job', 'Title'> &
+    slug: Attribute.UID &
       Attribute.Required &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
         };
       }>;
-    relatedJobs: Attribute.Relation<
-      'api::job.job',
-      'oneToMany',
-      'api::job.job'
-    >;
-    company: Attribute.Relation<
+    jobs: Attribute.Relation<
       'api::job.job',
       'manyToOne',
       'api::company.company'
     >;
-    skillsTags: Attribute.Relation<
+    skills_tags: Attribute.Relation<
       'api::job.job',
-      'manyToMany',
+      'oneToMany',
       'api::tag.tag'
     >;
     createdAt: Attribute.DateTime;
@@ -1030,7 +1000,7 @@ export interface ApiTagTag extends Schema.CollectionType {
     name: Attribute.String & Attribute.Required & Attribute.Unique;
     type: Attribute.Enumeration<['skill', 'other']> &
       Attribute.DefaultTo<'skill'>;
-    jobs: Attribute.Relation<'api::tag.tag', 'manyToMany', 'api::job.job'>;
+    job: Attribute.Relation<'api::tag.tag', 'manyToOne', 'api::job.job'>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

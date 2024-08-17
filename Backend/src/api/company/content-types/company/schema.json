@@ -12,7 +12,7 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "companyName": {
+    "name": {
       "type": "string",
       "required": true,
       "unique": true
@@ -46,14 +46,16 @@
     },
     "slug": {
       "type": "uid",
-      "targetField": "companyName",
       "required": true
     },
-    "jobs": {
+    "description": {
+      "type": "blocks"
+    },
+    "company": {
       "type": "relation",
       "relation": "oneToMany",
       "target": "api::job.job",
-      "mappedBy": "company"
+      "mappedBy": "jobs"
     }
   }
 }
