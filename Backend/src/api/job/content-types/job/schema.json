@@ -56,23 +56,7 @@
         "Contract"
       ]
     },
-    "jobCategory": {
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "type": "string"
-    },
-    "jobDescripiton": {
-      "pluginOptions": {
-        "i18n": {
-          "localized": true
-        }
-      },
-      "type": "blocks"
-    },
-    "jobResponsibilities": {
+    "jobDescription": {
       "pluginOptions": {
         "i18n": {
           "localized": true
@@ -139,6 +123,21 @@
       "relation": "oneToMany",
       "target": "api::tag.tag",
       "mappedBy": "job"
+    },
+    "Industry": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "enumeration",
+      "enum": [
+        "Business",
+        "Banking",
+        "Education",
+        "Telecommunication",
+        "others"
+      ]
     }
   }
 }

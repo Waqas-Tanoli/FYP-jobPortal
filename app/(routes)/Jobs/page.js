@@ -1,10 +1,10 @@
 import Jobs from "@/components/Users/Jobs";
 
-const jobs = () => {
+const AllJobs = () => {
   return (
     <div>
       <Jobs />
     </div>
   );
 };
-export default jobs;
+export default AllJobs;

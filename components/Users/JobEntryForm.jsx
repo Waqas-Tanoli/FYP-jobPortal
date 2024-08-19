@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
-import GlobalApi from "@/_utils/GlobalApi";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+import { createJobEntry } from "@/app/api/jobs";
 
 const JobEntryForm = () => {
   const [formData, setFormData] = useState({
@@ -10,15 +11,16 @@ const JobEntryForm = () => {
     remoteOk: false,
     datePosted: "",
     jobType: "Full-Time",
-    jobCategory: "",
+    Industry: "Business",
     jobDescription: "",
-    jobResponsibilities: "",
     education: "Bachelors",
     salary: "",
     experienceLevel: "Junior",
     company: "",
     skillsTags: "",
   });
+
+  const router = useRouter();
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -33,30 +35,43 @@ const JobEntryForm = () => {
     try {
       const slug = formData.title.toLowerCase().replace(/\s+/g, "-");
 
+      const jobDescription = formData.jobDescription
+        ? formData.jobDescription.replace(/\n/g, "<br>").trim()
+        : "";
+
+      const skillsTags = formData.skillsTags
+        ? formData.skillsTags.split(",").map((tag) => tag.trim())
+        : [];
+
       const jobData = {
-        ...formData,
-        slug,
-        skillsTags: formData.skillsTags.split(","),
+        data: {
+          ...formData,
+          slug,
+          jobDescription,
+          skillsTags: skillsTags.map((tagId) => ({ id: tagId })), // Format for relationships
+        },
       };
 
-      await GlobalApi.createJobEntry(jobData);
+      await createJobEntry(jobData);
 
       toast.success("Job created successfully!");
 
+      // Reset form after successful submission
       setFormData({
         title: "",
         remoteOk: false,
         datePosted: "",
         jobType: "Full-Time",
-        jobCategory: "",
+        Industry: "Business",
         jobDescription: "",
-        jobResponsibilities: "",
         education: "Bachelors",
         salary: "",
         experienceLevel: "Junior",
         company: "",
         skillsTags: "",
       });
+
+      router.push("/Jobs");
     } catch (error) {
       console.error(
         "Error creating job:",
@@ -72,6 +87,7 @@ const JobEntryForm = () => {
         Create a Job Entry
       </h2>
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Job Title */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Job Title
@@ -85,6 +101,8 @@ const JobEntryForm = () => {
             required
           />
         </div>
+
+        {/* Remote OK */}
         <div className="flex items-center space-x-3">
           <label className="block text-gray-700 font-semibold">
             Remote OK?
@@ -97,6 +115,8 @@ const JobEntryForm = () => {
             className="h-5 w-5 text-blue-600"
           />
         </div>
+
+        {/* Date Posted */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Date Posted
@@ -110,6 +130,8 @@ const JobEntryForm = () => {
             required
           />
         </div>
+
+        {/* Job Type */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Job Type
@@ -127,6 +149,8 @@ const JobEntryForm = () => {
             <option>Contract</option>
           </select>
         </div>
+
+        {/* Education */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Education
@@ -143,21 +167,31 @@ const JobEntryForm = () => {
             <option>Bachelors</option>
             <option>Masters</option>
             <option>Ph.D</option>
-            <option>M.Phil</option>
+            <option>M.phill</option>
           </select>
         </div>
+
+        {/* Industry */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
-            Job Category
+            Industry
           </label>
-          <input
-            type="text"
-            name="jobCategory"
-            value={formData.jobCategory}
+          <select
+            name="industry"
+            value={formData.Industry}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
+            required
+          >
+            <option>Business</option>
+            <option>Banking</option>
+            <option>Education</option>
+            <option>Telecommunication</option>
+            <option>Others</option>
+          </select>
         </div>
+
+        {/* Job Description */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Job Description
@@ -169,17 +203,8 @@ const JobEntryForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
-        <div>
-          <label className="block text-gray-700 font-semibold mb-2">
-            Job Responsibilities
-          </label>
-          <textarea
-            name="jobResponsibilities"
-            value={formData.jobResponsibilities}
-            onChange={handleChange}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
-          />
-        </div>
+
+        {/* Salary */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Salary
@@ -192,6 +217,8 @@ const JobEntryForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
+
+        {/* Experience Level */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Experience Level
@@ -202,13 +229,14 @@ const JobEntryForm = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
-            <option>Tech Lead</option>
-            <option>Senior</option>
-            <option>Mediocre</option>
             <option>Junior</option>
-            <option>Fresher</option>
+            <option>Mediocre</option>
+            <option>Senior</option>
+            <option>Tech Lead</option>
           </select>
         </div>
+
+        {/* Company */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Company
@@ -221,6 +249,8 @@ const JobEntryForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
+
+        {/* Skills Tags */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
             Skills Tags
@@ -234,11 +264,19 @@ const JobEntryForm = () => {
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
+
+        {/* Submit and Redirect Buttons */}
         <button
           type="submit"
           className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Submit Job
+        </button>
+        <button
+          onClick={() => router.push("/Jobs")}
+          className="w-full mt-4 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
+        >
+          Go to Jobs Section
         </button>
       </form>
     </div>

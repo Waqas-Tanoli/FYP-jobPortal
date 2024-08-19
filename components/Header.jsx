@@ -1,8 +1,25 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Cookies from "js-cookie";
 import Link from "next/link";
+import MyProfile from "@/components/Users/MyProfile";
 
 const Header = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const checkLoginStatus = () => {
+      const user = Cookies.get("user");
+      setIsLoggedIn(!!user);
+    };
+
+    checkLoginStatus();
+    window.addEventListener("storage", checkLoginStatus);
+
+    return () => window.removeEventListener("storage", checkLoginStatus);
+  }, []);
+
   const Menu = [
     { id: 1, name: "Home", path: "/" },
     { id: 2, name: "Find Jobs", path: "/" },
@@ -26,21 +43,25 @@ const Header = () => {
       </div>
 
       <div className="flex gap-9 mr-5 items-center">
-        <>
-          <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow">
-            For Employers
-          </button>
-          <Link href="/Login">
-            <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-              Log in
+        {isLoggedIn ? (
+          <MyProfile />
+        ) : (
+          <>
+            <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow">
+              For Employers
             </button>
-          </Link>
-          <Link href="/Register">
-            <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-              Sign up
-            </button>
-          </Link>
-        </>
+            <Link href="/Login">
+              <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                Log in
+              </button>
+            </Link>
+            <Link href="/Register">
+              <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                Sign up
+              </button>
+            </Link>
+          </>
+        )}
       </div>
     </div>
   );

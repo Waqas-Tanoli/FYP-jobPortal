@@ -4,6 +4,7 @@ const nextConfig = {
   images: {
     domains: ["res.cloudinary.com"],
   },
+  productionBrowserSourceMaps: false,
 };
 
 export default nextConfig;

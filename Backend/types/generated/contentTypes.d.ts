@@ -770,7 +770,8 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       'manyToOne',
       'plugin::users-permissions.role'
     >;
-    profilePicture: Attribute.Media<'images'> & Attribute.Required;
+    profilePicture: Attribute.Media<'images'>;
+    Company: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -879,19 +880,7 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    jobCategory: Attribute.String &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    jobDescripiton: Attribute.Blocks &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    jobResponsibilities: Attribute.Blocks &
+    jobDescription: Attribute.Blocks &
       Attribute.SetPluginOptions<{
         i18n: {
           localized: true;
@@ -936,6 +925,14 @@ export interface ApiJobJob extends Schema.CollectionType {
       'oneToMany',
       'api::tag.tag'
     >;
+    Industry: Attribute.Enumeration<
+      ['Business', 'Banking', 'Education', 'Telecommunication', 'others']
+    > &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
