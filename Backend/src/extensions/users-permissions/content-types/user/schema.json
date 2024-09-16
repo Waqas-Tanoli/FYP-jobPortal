@@ -75,6 +75,47 @@
     },
     "Company": {
       "type": "string"
+    },
+    "Address": {
+      "type": "text"
+    },
+    "isCompany": {
+      "type": "boolean",
+      "default": false,
+      "required": false
+    },
+    "location": {
+      "type": "string"
+    },
+    "logo": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
+      "allowedTypes": [
+        "images"
+      ]
+    },
+    "slogan": {
+      "type": "text"
+    },
+    "website": {
+      "type": "string"
+    },
+    "description": {
+      "type": "text"
+    },
+    "files": {
+      "allowedTypes": [
+        "files"
+      ],
+      "type": "media",
+      "multiple": false
+    },
+    "apply_jobs": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::apply-job.apply-job",
+      "mappedBy": "users_permissions_users"
     }
   }
 }

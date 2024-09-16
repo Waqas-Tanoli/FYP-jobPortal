@@ -42,7 +42,7 @@ const MembersHired = () => {
                   className="rounded-full"
                 />
                 <p className="text-lg font-medium">
-                  {item.attributes?.companyName || "Unknown Company"}
+                  {item.attributes?.name || "Unknown Company"}
                 </p>
               </div>
             ))

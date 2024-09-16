@@ -138,6 +138,29 @@
         "Telecommunication",
         "others"
       ]
+    },
+    "location": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string"
+    },
+    "Company": {
+      "pluginOptions": {
+        "i18n": {
+          "localized": true
+        }
+      },
+      "type": "string",
+      "required": true
+    },
+    "apply_job": {
+      "type": "relation",
+      "relation": "manyToOne",
+      "target": "api::apply-job.apply-job",
+      "inversedBy": "jobs"
     }
   }
 }

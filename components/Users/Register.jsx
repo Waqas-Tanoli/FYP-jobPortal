@@ -1,118 +1,196 @@
 "use client";
 
+import axiosClient from "@/app/_utils/axiosClient";
 import { useState } from "react";
-import Link from "next/link";
-import { register } from "@/app/api/auth";
+import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const Signup = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+const SignUp = () => {
+  const [profilePicture, setProfilePicture] = useState(null);
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    Company: "",
+    Address: "",
+  });
+  const [loading, setLoading] = useState(false);
+
+  const handleFileChange = (e) => {
+    setProfilePicture(e.target.files[0]);
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      await register(username, email, password);
-      setSuccess(true);
-      toast.success("Registration successful! Redirecting to login...");
-    } catch (err) {
-      setError(err.message || "An error occurred during registration");
-      toast.error(err.message || "An error occurred during registration");
+      let uploadedImage = null;
+      if (profilePicture) {
+        const form = new FormData();
+        form.append("files", profilePicture);
+        const uploadRes = await axiosClient.post("/upload", form);
+        uploadedImage = uploadRes.data[0];
+      }
+
+      const registerRes = await axiosClient.post("/auth/local/register", {
+        ...formData,
+        profilePicture: uploadedImage ? uploadedImage.id : null,
+        present,
+      });
+
+      const { jwt, user } = registerRes.data;
+
+      Cookies.set("jwt", jwt, { expires: 7 });
+      Cookies.set("user", JSON.stringify(user), { expires: 7 });
+
+      toast.success("Registration successful!");
+
+      // form will clear after success
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        Company: "",
+        Address: "",
+      });
+      setProfilePicture(null);
+    } catch (error) {
+      // Error notification
+      toast.error("Error registering user. Please try again.");
+      console.error("Error registering user:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (success) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-lg">
-          <p className="text-lg font-semibold mb-4">Registration successful!</p>
-          <Link href="/auth/login" className="text-blue-600 hover:underline">
-            Go to Login
-          </Link>
-          <ToastContainer />
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-100">
-      <div className="max-w-md w-full p-8 bg-white border border-gray-300 rounded-lg shadow-lg">
-        <h2 className="text-3xl font-bold mb-6 text-center text-gray-800">
-          Sign Up
-        </h2>
-        <form onSubmit={handleSubmit}>
-          <div className="mb-6">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg shadow-md">
+        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
             <label
               htmlFor="username"
-              className="block text-sm font-medium text-gray-600 mb-2"
+              className="block text-sm font-medium text-gray-700"
             >
               Username
             </label>
             <input
-              id="username"
               type="text"
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              name="username"
+              id="username"
+              placeholder="Enter your username"
+              value={formData.username}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          <div className="mb-6">
+          <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-600 mb-2"
+              className="block text-sm font-medium text-gray-700"
             >
               Email
             </label>
             <input
-              id="email"
               type="email"
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              name="email"
+              id="email"
+              placeholder="Enter your email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          <div className="mb-6">
+          <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-600 mb-2"
+              className="block text-sm font-medium text-gray-700"
             >
               Password
             </label>
             <input
-              id="password"
               type="password"
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              name="password"
+              id="password"
+              placeholder="Enter your password"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
           </div>
-          {error && <p className="text-red-600 text-sm mb-4">{error}</p>}
+          <div>
+            <label
+              htmlFor="Company"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Company Name
+            </label>
+            <input
+              type="text"
+              name="Company"
+              id="Company"
+              placeholder="Enter your company name"
+              value={formData.Company}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="Address"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Address
+            </label>
+            <input
+              type="text"
+              name="Address"
+              id="Address"
+              placeholder="Enter your address"
+              value={formData.Address}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="profilePicture"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Profile Picture
+            </label>
+            <input
+              type="file"
+              name="profilePicture"
+              id="profilePicture"
+              onChange={handleFileChange}
+              accept="image/*"
+              className="w-full p-2 border border-gray-300 rounded-md"
+            />
+          </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 rounded-md hover:bg-blue-700 transition-colors"
+            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            disabled={loading}
           >
-            Sign Up
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
-        <p className="text-sm text-center mt-4 text-gray-600">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="text-blue-600 hover:underline">
-            Log in here
-          </Link>
-        </p>
         <ToastContainer />
       </div>
     </div>
   );
 };
 
-export default Signup;
+export default SignUp;

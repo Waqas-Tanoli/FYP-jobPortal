@@ -1,11 +1,22 @@
 import Cookies from "js-cookie";
 import axiosClient from "../_utils/axiosClient";
+import qs from "qs";
 
-//get user profilesa
+// Get user profile
 export const getUserProfile = async (userId) => {
   try {
-    const response = await axiosClient.get(`/users/${userId}?populate=*`);
-    return response.data; // Ensure this includes `username`
+    const query = qs.stringify(
+      {
+        populate: {
+          profilePicture: true,
+        },
+      },
+      { encodeValuesOnly: true }
+    );
+
+    const response = await axiosClient.get(`/users/${userId}?${query}`);
+
+    return response.data;
   } catch (error) {
     console.error("Error fetching user profile:", error);
     throw error;
@@ -27,13 +38,9 @@ export const updateUserProfile = async (userId, profileData) => {
       },
     });
 
-    console.log("Update response:", response.data); // Log response
     return response.data;
   } catch (error) {
-    console.error(
-      "Error updating user profile:",
-      error.response ? error.response.data : error.message
-    );
+    console.error("Error updating user profile:", error);
     throw error;
   }
 };

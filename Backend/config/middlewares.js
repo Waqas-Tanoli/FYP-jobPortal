@@ -32,6 +32,11 @@ module.exports = [
           ],
           upgradeInsecureRequests: null,
         },
+        settings: {
+          upload: {
+            maxFileSize: 10000000, // 10 MB limit, adjust as needed
+          },
+        },
       },
     },
   },

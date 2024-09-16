@@ -772,6 +772,19 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     >;
     profilePicture: Attribute.Media<'images'>;
     Company: Attribute.String;
+    Address: Attribute.Text;
+    isCompany: Attribute.Boolean & Attribute.DefaultTo<false>;
+    location: Attribute.String;
+    logo: Attribute.Media<'images'>;
+    slogan: Attribute.Text;
+    website: Attribute.String;
+    description: Attribute.Text;
+    files: Attribute.Media<'files'>;
+    apply_jobs: Attribute.Relation<
+      'plugin::users-permissions.user',
+      'manyToMany',
+      'api::apply-job.apply-job'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -782,6 +795,49 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
       Attribute.Private;
     updatedBy: Attribute.Relation<
       'plugin::users-permissions.user',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiApplyJobApplyJob extends Schema.CollectionType {
+  collectionName: 'apply_jobs';
+  info: {
+    singularName: 'apply-job';
+    pluralName: 'apply-jobs';
+    displayName: 'applications';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    JobId: Attribute.UID & Attribute.Required;
+    jobs: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToMany',
+      'api::job.job'
+    >;
+    users_permissions_users: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    applicationDate: Attribute.DateTime;
+    Status: Attribute.Enumeration<['pending', 'accepted', 'rejected']>;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::apply-job.apply-job',
       'oneToOne',
       'admin::user'
     > &
@@ -802,9 +858,8 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
   };
   attributes: {
     name: Attribute.String & Attribute.Required & Attribute.Unique;
-    City: Attribute.String;
+    location: Attribute.String;
     logo: Attribute.Media<'images'> & Attribute.Required;
-    coverImage: Attribute.Media<'images'> & Attribute.Required;
     slogan: Attribute.Text &
       Attribute.Required &
       Attribute.SetMinMaxLength<{
@@ -817,6 +872,11 @@ export interface ApiCompanyCompany extends Schema.CollectionType {
       'api::company.company',
       'oneToMany',
       'api::job.job'
+    >;
+    users_permissions_user: Attribute.Relation<
+      'api::company.company',
+      'oneToOne',
+      'plugin::users-permissions.user'
     >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
@@ -933,6 +993,24 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
+    location: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    Company: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    apply_job: Attribute.Relation<
+      'api::job.job',
+      'manyToOne',
+      'api::apply-job.apply-job'
+    >;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
@@ -1026,6 +1104,7 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::apply-job.apply-job': ApiApplyJobApplyJob;
       'api::company.company': ApiCompanyCompany;
       'api::job.job': ApiJobJob;
       'api::review-card.review-card': ApiReviewCardReviewCard;

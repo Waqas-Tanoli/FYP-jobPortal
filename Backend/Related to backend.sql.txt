@@ -1,0 +1,8 @@
+
+
+Your instructor can import the SQL file into their PostgreSQL database using the following command:
+
+cmd
+Copy code
+psql -U their_username -d their_database_name -f "path_to_file/Backend.sql"
+Replace their_username, their_database_name, and path_to_file/Backend.sql with their actual PostgreSQL username, database name, and the path to the SQL file.

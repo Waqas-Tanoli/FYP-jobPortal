@@ -4,21 +4,46 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import Link from "next/link";
 import MyProfile from "@/components/Users/MyProfile";
+import CompanyProfile from "./Company/CompanyProfile";
+import { getUserProfile } from "@/app/api/profile";
+import { logout } from "@/app/api/auth";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isCompany, setIsCompany] = useState(null);
 
   useEffect(() => {
-    const checkLoginStatus = () => {
-      const user = Cookies.get("user");
-      setIsLoggedIn(!!user);
+    const checkLoginStatus = async () => {
+      const token = Cookies.get("token");
+
+      if (token) {
+        setIsLoggedIn(true);
+
+        try {
+          const userData = Cookies.get("user");
+          if (userData) {
+            const parsedUser = JSON.parse(userData);
+            const profile = await getUserProfile(parsedUser.userId);
+
+            setIsCompany(profile.isCompany);
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setIsCompany(null);
+      }
     };
 
     checkLoginStatus();
-    window.addEventListener("storage", checkLoginStatus);
-
-    return () => window.removeEventListener("storage", checkLoginStatus);
   }, []);
+
+  const handleLogout = () => {
+    logout();
+    setIsLoggedIn(false);
+    setIsCompany(null);
+  };
 
   const Menu = [
     { id: 1, name: "Home", path: "/" },
@@ -30,6 +55,7 @@ const Header = () => {
   return (
     <div className="flex items-center justify-between mt-2 pl-5 shadow-current">
       <div className="flex items-center gap-10">
+        {/* Menu always displayed */}
         <ul className="md:flex gap-8 hidden">
           {Menu.map((item) => (
             <li
@@ -44,17 +70,33 @@ const Header = () => {
 
       <div className="flex gap-9 mr-5 items-center">
         {isLoggedIn ? (
-          <MyProfile />
+          isCompany !== null ? (
+            isCompany ? (
+              <>
+                <CompanyProfile />
+              </>
+            ) : (
+              <>
+                <MyProfile />
+              </>
+            )
+          ) : (
+            <div>Loading profile...</div>
+          )
         ) : (
           <>
-            <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow">
-              For Employers
-            </button>
+            <Link href="/EmployerSignUp">
+              <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-3 border border-gray-400 rounded shadow">
+                For Employers
+              </button>
+            </Link>
+
             <Link href="/Login">
               <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
                 Log in
               </button>
             </Link>
+
             <Link href="/Register">
               <button className="bg-[#040c1b] hover:bg-[#8E3CCB] hover:text-white hover:scale-105 transition-all ease-in-out text-white font-semibold py-2 px-4 border border-gray-400 rounded shadow">
                 Sign up

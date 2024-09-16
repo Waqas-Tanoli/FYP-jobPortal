@@ -16,7 +16,7 @@ const Login = () => {
   useEffect(() => {
     const token = Cookies.get("token");
     if (token) {
-      router.push("/Dashboard");
+      router.push("/");
     }
   }, [router]);
 
@@ -25,11 +25,22 @@ const Login = () => {
     setError("");
     try {
       const { user, jwt } = await login(email, password);
+
       if (jwt) {
-        Cookies.set("token", jwt);
-        Cookies.set("userId", user.id);
+        Cookies.set("token", jwt, {
+          secure: process.env.NODE_ENV === "production",
+        });
+        Cookies.set(
+          "user",
+          JSON.stringify({
+            userId: user.id,
+            username: user.username,
+          }),
+          { secure: process.env.NODE_ENV === "production" }
+        );
+
         toast.success(`Login successful! Welcome, ${user.username}`);
-        router.push("/Dashboard");
+        router.push("/");
       } else {
         toast.error("Login failed. Please check your credentials.");
       }
@@ -38,7 +49,7 @@ const Login = () => {
       toast.error(
         error.message || "Login failed. Please check your credentials."
       );
-      setError("Login failed. Please check your credentials.");
+      setError(error.message || "Login failed. Please check your credentials.");
     }
   };
 
@@ -97,8 +108,8 @@ const Login = () => {
           {/* Register Redirect */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
-              <a href="/register" className="text-indigo-600 hover:underline">
+              Don&apos;t have an account?{" "}
+              <a href="/Register" className="text-indigo-600 hover:underline">
                 Sign Up
               </a>
             </p>

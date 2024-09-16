@@ -17,18 +17,10 @@
       "required": true,
       "unique": true
     },
-    "City": {
+    "location": {
       "type": "string"
     },
     "logo": {
-      "type": "media",
-      "multiple": false,
-      "required": true,
-      "allowedTypes": [
-        "images"
-      ]
-    },
-    "coverImage": {
       "type": "media",
       "multiple": false,
       "required": true,
@@ -56,6 +48,11 @@
       "relation": "oneToMany",
       "target": "api::job.job",
       "mappedBy": "jobs"
+    },
+    "users_permissions_user": {
+      "type": "relation",
+      "relation": "oneToOne",
+      "target": "plugin::users-permissions.user"
     }
   }
 }

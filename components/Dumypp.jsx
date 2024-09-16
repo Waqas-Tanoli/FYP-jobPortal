@@ -1,55 +1,18 @@
 "use client";
 
 import axiosClient from "@/app/_utils/axiosClient";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Cookies from "js-cookie";
-import { toast, ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation"; // Use Next.js router
 
-const EditProfile = () => {
+const Register = () => {
+  const [profilePicture, setProfilePicture] = useState(null);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
+    password: "",
     Company: "",
     Address: "",
   });
-  const [profilePicture, setProfilePicture] = useState(null);
-  const [currentProfilePicture, setCurrentProfilePicture] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Initialize router for redirection
-
-  useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const userId = Cookies.get("userId");
-        if (!userId) {
-          throw new Error("No userId found in cookies.");
-        }
-
-        const response = await axiosClient.get(`/users/${userId}`);
-        const user = response.data;
-
-        setFormData({
-          username: user.username || "",
-          email: user.email || "",
-          Company: user.Company || "",
-          Address: user.Address || "",
-        });
-
-        setCurrentProfilePicture(
-          user.profilePicture ? user.profilePicture.url : null
-        );
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        toast.error("Failed to fetch profile. Please try again.");
-        // Redirect to login if error occurs due to no userId
-        router.push("/Login");
-      }
-    };
-
-    fetchUserProfile();
-  }, [router]); // Include router in dependency array
 
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);
@@ -61,44 +24,37 @@ const EditProfile = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
 
     try {
-      let uploadedImage = null;
-      if (profilePicture) {
-        const form = new FormData();
-        form.append("files", profilePicture);
-        const uploadRes = await axiosClient.post("/upload", form);
-        uploadedImage = uploadRes.data[0];
-      }
+      // 1. Upload the profile picture
+      const form = new FormData();
+      form.append("files", profilePicture);
 
-      const userId = Cookies.get("userId");
-      if (!userId) {
-        throw new Error("No userId found in cookies.");
-      }
+      const uploadRes = await axiosClient.post("/upload", form);
+      const uploadedImage = uploadRes.data[0]; // The uploaded image response
 
-      const updateRes = await axiosClient.put(`/users/${userId}`, {
+      // 2. Register the user with the uploaded profile picture ID
+      const registerRes = await axiosClient.post("/auth/local/register", {
         ...formData,
-        profilePicture: uploadedImage ? uploadedImage.id : null,
+        profilePicture: uploadedImage.id, // Save the image ID in the user profile
       });
 
-      toast.success("Profile updated successfully!");
+      const { jwt, user } = registerRes.data; // Get JWT token and user data
 
-      setCurrentProfilePicture(
-        uploadedImage ? uploadedImage.url : currentProfilePicture
-      );
+      // 3. Store the JWT token and user info in cookies
+      Cookies.set("jwt", jwt, { expires: 7 }); // Save JWT for 7 days
+      Cookies.set("user", JSON.stringify(user), { expires: 7 });
+
+      console.log("Registration successful:", registerRes.data);
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile. Please try again.");
-    } finally {
-      setLoading(false);
+      console.error("Error registering user:", error);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Edit Profile</h2>
+        <h2 className="text-2xl font-bold text-center mb-6">Register</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label
@@ -112,7 +68,6 @@ const EditProfile = () => {
               name="username"
               id="username"
               placeholder="Enter your username"
-              value={formData.username}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -130,7 +85,23 @@ const EditProfile = () => {
               name="email"
               id="email"
               placeholder="Enter your email"
-              value={formData.email}
+              onChange={handleChange}
+              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="password"
+              className="block text-sm font-medium text-gray-700"
+            >
+              Password
+            </label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              placeholder="Enter your password"
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
@@ -141,14 +112,13 @@ const EditProfile = () => {
               htmlFor="Company"
               className="block text-sm font-medium text-gray-700"
             >
-              Company
+              Company Name
             </label>
             <input
               type="text"
               name="Company"
               id="Company"
               placeholder="Enter your company name"
-              value={formData.Company}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -165,7 +135,6 @@ const EditProfile = () => {
               name="Address"
               id="Address"
               placeholder="Enter your address"
-              value={formData.Address}
               onChange={handleChange}
               className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
@@ -177,15 +146,6 @@ const EditProfile = () => {
             >
               Profile Picture
             </label>
-            {currentProfilePicture && (
-              <div className="mb-4">
-                <img
-                  src={currentProfilePicture}
-                  alt="Current Profile Picture"
-                  className="w-28 h-28 object-cover rounded-md"
-                />
-              </div>
-            )}
             <input
               type="file"
               name="profilePicture"
@@ -195,19 +155,16 @@ const EditProfile = () => {
               className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
-
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
-            disabled={loading}
           >
-            {loading ? "Updating..." : "Update Profile"}
+            Register
           </button>
         </form>
-        <ToastContainer />
       </div>
     </div>
   );
 };
 
-export default EditProfile;
+export default Register;
