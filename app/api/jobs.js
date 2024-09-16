@@ -115,8 +115,8 @@ export const fetchAppliedJobs = async (userId) => {
     const response = await axiosClient.get(
       `/apply-jobs?filters[users_permissions_users][id][$eq]=${userId}&populate[jobs][populate]=*`
     );
-    console.log("API Response:", response); // Log the full response
-    return response.data; // Return the entire data part
+    console.log("API Response:", response);
+    return response.data;
   } catch (error) {
     console.error(
       "Error in API call:",

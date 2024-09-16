@@ -19,13 +19,12 @@ const AppliedJobs = () => {
         const response = await fetchAppliedJobs(userId);
         console.log("Fetched Applied Jobs:", response);
 
-        // Access the `data` array from the response
         const jobsData = response.data || [];
         const formattedJobs = jobsData.map((item) => {
-          const jobDetails = item.attributes.jobs?.data?.[0]?.attributes || {}; // Get job details from the jobs array
+          const jobDetails = item.attributes.jobs?.data?.[0]?.attributes || {};
           return {
-            ...item.attributes, // Application attributes like applicationDate, Status
-            job: jobDetails, // Extracted job details
+            ...item.attributes,
+            job: jobDetails,
           };
         });
 
@@ -80,13 +79,19 @@ const AppliedJobs = () => {
                 </p>
                 <p className="text-gray-600 mb-4">{jobDescription}</p>
                 <div className="mb-4">
-                  <div className="flex items-center text-sm text-gray-500 mb-2">
-                    <span className="font-semibold">Location:</span>{" "}
-                    {job.location || "Not Specified"}
-                  </div>
+                  {job.remoteOk ? (
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                      <span className="font-semibold">Location: Remote</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center text-sm text-gray-500 mb-2">
+                      <span className="font-semibold">Location:</span>{" "}
+                      {job.location || "Not Specified"}
+                    </div>
+                  )}
                   <div className="flex items-center text-sm text-gray-500 mb-2">
                     <span className="font-semibold">Salary:</span> $
-                    {job.salary ? `${job.salary}K` : "Not Specified"}
+                    {job.salary || "Will be discussed!!"}K
                   </div>
                   <div className="flex items-center text-sm text-gray-500 mb-2">
                     <span className="font-semibold">Education:</span>{" "}
@@ -95,6 +100,14 @@ const AppliedJobs = () => {
                   <div className="flex items-center text-sm text-gray-500 mb-2">
                     <span className="font-semibold">Experience Level:</span>{" "}
                     {job.experienceLevel || "Not Specified"}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500 mb-2">
+                    <span className="font-semibold">Job Type:</span>{" "}
+                    {job.jobType || "Not Specified"}
+                  </div>
+                  <div className="flex items-center text-sm text-gray-500 mb-2">
+                    <span className="font-semibold">Industry:</span>{" "}
+                    {job.Industry || "Not Specified"}
                   </div>
                 </div>
                 <div className="flex justify-between items-center text-sm text-gray-500">
@@ -106,10 +119,16 @@ const AppliedJobs = () => {
                     className={`px-2 py-1 rounded ${
                       application.Status === "accepted"
                         ? "bg-green-200 text-green-800"
+                        : application.Status === "rejected"
+                        ? "bg-red-200 text-red-600"
                         : "bg-yellow-200 text-yellow-800"
                     }`}
                   >
-                    {applicationStatus}
+                    {application.Status === "rejected"
+                      ? "Rejected"
+                      : application.Status === "accepted"
+                      ? "Accepted"
+                      : "Pending"}
                   </span>
                 </div>
               </div>

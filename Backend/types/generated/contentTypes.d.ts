@@ -940,12 +940,6 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    jobDescription: Attribute.Blocks &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
     education: Attribute.Enumeration<
       ['Matric', 'F.Sc', 'Bachelors', 'Masters', 'Ph.D', 'M.phill']
     > &
@@ -1011,6 +1005,18 @@ export interface ApiJobJob extends Schema.CollectionType {
       'manyToOne',
       'api::apply-job.apply-job'
     >;
+    lastDateToApply: Attribute.Date &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    jobDescription: Attribute.Text &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;
