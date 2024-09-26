@@ -6,17 +6,22 @@ import { applyForJob, getJobs } from "@/app/api/jobs";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
+import { getUserProfile } from "@/app/api/profile";
+import { fetchPostedJobs, deleteJob } from "@/app/api/company";
 
 const Jobs = () => {
   const [jobs, setJobs] = useState([]);
   const [expandedJob, setExpandedJob] = useState(null);
+  const [isCompany, setIsCompany] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [viewingMyJobs, setViewingMyJobs] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const response = await getJobs();
-        console.log("API Response:", response);
         if (response && response.data && Array.isArray(response.data)) {
           setJobs(response.data);
         } else {
@@ -26,12 +31,66 @@ const Jobs = () => {
         console.error("Error fetching jobs:", error);
       }
     };
-    fetchJobs();
+
+    const checkLoginStatus = async () => {
+      const token = Cookies.get("token");
+
+      if (token) {
+        setIsLoggedIn(true);
+
+        try {
+          const userData = Cookies.get("user");
+          if (userData) {
+            const parsedUser = JSON.parse(userData);
+            const userProfile = await getUserProfile(parsedUser.userId);
+            setIsCompany(userProfile.isCompany);
+
+            if (userProfile.isCompany) {
+              try {
+                const myJobs = await fetchPostedJobs(parsedUser.userId);
+                setJobs(myJobs.data);
+                setViewingMyJobs(true);
+              } catch (error) {
+                toast.error("Failed to fetch your posted jobs.");
+                console.error("Error fetching posted jobs:", error);
+              }
+            } else {
+              fetchJobs();
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        } finally {
+          setIsLoading(false);
+        }
+      } else {
+        setIsLoggedIn(false);
+        setIsCompany(false);
+        setIsLoading(false);
+      }
+    };
+
+    checkLoginStatus();
   }, []);
 
   const getUserIdFromCookies = () => {
     const userId = Cookies.get("userId");
     return userId ? userId : null;
+  };
+
+  // Fetch jobs posted by the logged-in company user
+  const fetchMyJobs = async () => {
+    const userId = getUserIdFromCookies();
+    if (userId && isCompany) {
+      try {
+        const myJobs = await fetchPostedJobs(userId);
+        setJobs(myJobs.data);
+        setViewingMyJobs(true);
+      } catch (error) {
+        toast.error("Failed to fetch your posted jobs.");
+        console.error("Error fetching posted jobs:", error);
+      }
+    }
   };
 
   const handleApply = async (jobId) => {
@@ -42,8 +101,24 @@ const Jobs = () => {
     }
 
     try {
-      const result = await applyForJob(jobId, userId);
+      await applyForJob(jobId, userId);
       toast.success("You have successfully applied for the job!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
+  const handleEditJob = (jobId) => {
+    router.push(`/edit-job/${jobId}`);
+  };
+
+  const handleDeleteJob = async (jobId) => {
+    try {
+      await deleteJob(jobId);
+      toast.success("Job has been deleted.");
+
+      const response = await fetchMyJobs();
+      setJobs(response.data);
     } catch (error) {
       toast.error(error.message);
     }
@@ -67,16 +142,20 @@ const Jobs = () => {
     tempDiv.innerText = description;
     document.body.appendChild(tempDiv);
 
-    // Measure the height of the text
     const isLong = tempDiv.clientHeight > 60;
     document.body.removeChild(tempDiv);
     return isLong;
   };
 
+  if (isLoading) {
+    return <div className="text-center text-gray-500">Loading...</div>;
+  }
+
   return (
     <div className="p-6">
       <div className="mb-4 text-lg font-semibold">
-        Total Jobs Available: {jobs.length}
+        {viewingMyJobs ? "Your Posted Jobs" : "Total Jobs Available"}:{" "}
+        {jobs.length}
       </div>
 
       {/* Job Cards */}
@@ -158,17 +237,36 @@ const Jobs = () => {
                       {new Date(lastDateToApply).toLocaleDateString()}
                     </p>
                     <div className="flex gap-2 mt-4">
-                      {canApply ? (
-                        <button
-                          onClick={() => handleApply(job.id)}
-                          className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
-                        >
-                          Apply for Job
-                        </button>
+                      {isCompany ? (
+                        <>
+                          <button
+                            onClick={() => handleEditJob(job.id)}
+                            className="bg-yellow-500 text-white py-2 px-4 rounded hover:bg-yellow-600 transition-colors flex-1"
+                          >
+                            Edit Job
+                          </button>
+                          <button
+                            onClick={() => handleDeleteJob(job.id)}
+                            className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors flex-1"
+                          >
+                            Delete Job
+                          </button>
+                        </>
                       ) : (
-                        <div className="bg-red-500 text-white py-2 px-4 rounded flex-1 text-center">
-                          Job Expired
-                        </div>
+                        <>
+                          {canApply ? (
+                            <button
+                              onClick={() => handleApply(job.id)}
+                              className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
+                            >
+                              Apply for Job
+                            </button>
+                          ) : (
+                            <button className="bg-red-600 text-white py-2 px-4 rounded cursor-not-allowed flex-1">
+                              Job Expired
+                            </button>
+                          )}
+                        </>
                       )}
                     </div>
                   </div>
@@ -177,9 +275,9 @@ const Jobs = () => {
             );
           })
         ) : (
-          <p className="text-gray-500 text-center">
-            No jobs available at the moment.
-          </p>
+          <div className="text-center text-gray-500 col-span-3">
+            No jobs available.
+          </div>
         )}
       </div>
     </div>

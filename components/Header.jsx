@@ -6,11 +6,11 @@ import Link from "next/link";
 import MyProfile from "@/components/Users/MyProfile";
 import CompanyProfile from "./Company/CompanyProfile";
 import { getUserProfile } from "@/app/api/profile";
-import { logout } from "@/app/api/auth";
 
 const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isCompany, setIsCompany] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkLoginStatus = async () => {
@@ -24,26 +24,22 @@ const Header = () => {
           if (userData) {
             const parsedUser = JSON.parse(userData);
             const profile = await getUserProfile(parsedUser.userId);
-
             setIsCompany(profile.isCompany);
           }
         } catch (error) {
           console.error("Error fetching user profile:", error);
+        } finally {
+          setIsLoading(false);
         }
       } else {
         setIsLoggedIn(false);
         setIsCompany(null);
+        setIsLoading(false);
       }
     };
 
     checkLoginStatus();
   }, []);
-
-  const handleLogout = () => {
-    logout();
-    setIsLoggedIn(false);
-    setIsCompany(null);
-  };
 
   const Menu = [
     { id: 1, name: "Home", path: "/" },
@@ -69,19 +65,17 @@ const Header = () => {
       </div>
 
       <div className="flex gap-9 mr-5 items-center">
-        {isLoggedIn ? (
+        {isLoading ? (
+          <div>Loading profile...</div>
+        ) : isLoggedIn ? (
           isCompany !== null ? (
             isCompany ? (
-              <>
-                <CompanyProfile />
-              </>
+              <CompanyProfile />
             ) : (
-              <>
-                <MyProfile />
-              </>
+              <MyProfile />
             )
           ) : (
-            <div>Loading profile...</div>
+            <div>Error fetching profile</div>
           )
         ) : (
           <>

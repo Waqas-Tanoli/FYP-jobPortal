@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { createJobEntry } from "@/app/api/jobs";
+import Cookies from "js-cookie";
 
 const JobEntryForm = () => {
   const [formData, setFormData] = useState({
@@ -15,9 +16,11 @@ const JobEntryForm = () => {
     jobDescription: "",
     education: "Bachelors",
     salary: "",
-    experienceLevel: "Junior",
-    company: "",
-    skillsTags: "",
+    experienceLevel: "Senior",
+    Company: "",
+    skills_tags: "",
+    lastDateToApply: "",
+    location: "",
   });
 
   const router = useRouter();
@@ -32,31 +35,24 @@ const JobEntryForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    const slug = formData.title.toLowerCase().replace(/\s+/g, "-");
+
+    const userId = Cookies.get("userId");
+
+    const jobData = {
+      data: {
+        ...formData,
+        slug,
+        users_permissions_users: [{ id: userId }],
+      },
+    };
+
     try {
-      const slug = formData.title.toLowerCase().replace(/\s+/g, "-");
-
-      const jobDescription = formData.jobDescription
-        ? formData.jobDescription.replace(/\n/g, "<br>").trim()
-        : "";
-
-      const skillsTags = formData.skillsTags
-        ? formData.skillsTags.split(",").map((tag) => tag.trim())
-        : [];
-
-      const jobData = {
-        data: {
-          ...formData,
-          slug,
-          jobDescription,
-          skillsTags: skillsTags.map((tagId) => ({ id: tagId })), // Format for relationships
-        },
-      };
-
       await createJobEntry(jobData);
-
       toast.success("Job created successfully!");
 
-      // Reset form after successful submission
+      // Reset the form
       setFormData({
         title: "",
         remoteOk: false,
@@ -66,9 +62,11 @@ const JobEntryForm = () => {
         jobDescription: "",
         education: "Bachelors",
         salary: "",
-        experienceLevel: "Junior",
-        company: "",
-        skillsTags: "",
+        experienceLevel: "Senior",
+        Company: "",
+        skills_tags: "",
+        lastDateToApply: "",
+        location: "",
       });
 
       router.push("/Jobs");
@@ -77,6 +75,12 @@ const JobEntryForm = () => {
         "Error creating job:",
         error.response?.data || error.message
       );
+
+      const errorDetails = error.response?.data?.error?.details?.errors || [];
+      errorDetails.forEach((err) => {
+        console.error(`Field: ${err.path}, Message: ${err.message}`);
+      });
+
       toast.error("Failed to create job. Please check your input.");
     }
   };
@@ -131,6 +135,21 @@ const JobEntryForm = () => {
           />
         </div>
 
+        {/* Last Date to Apply */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-2">
+            Last Date to Apply
+          </label>
+          <input
+            type="date"
+            name="lastDateToApply"
+            value={formData.lastDateToApply}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            required
+          />
+        </div>
+
         {/* Job Type */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
@@ -177,7 +196,7 @@ const JobEntryForm = () => {
             Industry
           </label>
           <select
-            name="industry"
+            name="Industry"
             value={formData.Industry}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
@@ -189,6 +208,20 @@ const JobEntryForm = () => {
             <option>Telecommunication</option>
             <option>Others</option>
           </select>
+        </div>
+
+        {/* Location */}
+        <div>
+          <label className="block text-gray-700 font-semibold mb-2">
+            Location
+          </label>
+          <input
+            type="text"
+            name="location"
+            value={formData.location}
+            onChange={handleChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+          />
         </div>
 
         {/* Job Description */}
@@ -210,7 +243,7 @@ const JobEntryForm = () => {
             Salary
           </label>
           <input
-            type="text"
+            type="number"
             name="salary"
             value={formData.salary}
             onChange={handleChange}
@@ -229,10 +262,11 @@ const JobEntryForm = () => {
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           >
-            <option>Junior</option>
-            <option>Mediocre</option>
+            <option>Tech-Lead</option>
             <option>Senior</option>
-            <option>Tech Lead</option>
+            <option>Mediocre</option>
+            <option>Junior</option>
+            <option>Fresher</option>
           </select>
         </div>
 
@@ -243,8 +277,8 @@ const JobEntryForm = () => {
           </label>
           <input
             type="text"
-            name="company"
-            value={formData.company}
+            name="Company" // Make sure it matches formData key
+            value={formData.Company}
             onChange={handleChange}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
@@ -253,30 +287,22 @@ const JobEntryForm = () => {
         {/* Skills Tags */}
         <div>
           <label className="block text-gray-700 font-semibold mb-2">
-            Skills Tags
+            Skills Tags (comma-separated)
           </label>
           <input
             type="text"
-            name="skillsTags"
-            value={formData.skillsTags}
+            name="skills_tags" // Make sure it matches formData key
+            value={formData.skills_tags}
             onChange={handleChange}
-            placeholder="Separate tags with commas"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
           />
         </div>
 
-        {/* Submit and Redirect Buttons */}
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:ring-2 focus:ring-blue-500"
         >
-          Submit Job
-        </button>
-        <button
-          onClick={() => router.push("/Jobs")}
-          className="w-full mt-4 bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          Go to Jobs Section
+          Create Job
         </button>
       </form>
     </div>

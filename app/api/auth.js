@@ -56,6 +56,7 @@ export const register = async (
 };
 
 // Login function
+
 export const login = async (email, password) => {
   try {
     const response = await axiosClient.post("/auth/local", {
@@ -63,6 +64,16 @@ export const login = async (email, password) => {
       password,
     });
     const { jwt, user } = response.data;
+    Cookies.set(
+      "user",
+      JSON.stringify({
+        id: user.id,
+        username: user.username,
+        isCompany: user.isCompany,
+        email: user.email,
+      }),
+      { secure: true, sameSite: "Strict" }
+    );
 
     Cookies.set("token", jwt, { expires: 30 });
     Cookies.set("userId", user.id, { expires: 30 });

@@ -105,7 +105,7 @@ const Login = () => {
             Log In
           </button>
 
-          {/* Register Redirect */}
+          {/* Register Redirection */}
           <div className="mt-4 text-center">
             <p className="text-sm text-gray-600">
               Don&apos;t have an account?{" "}

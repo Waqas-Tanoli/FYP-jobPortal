@@ -27,17 +27,7 @@
     },
     "Status": {
       "type": "enumeration",
-      "enum": [
-        "pending",
-        "accepted",
-        "rejected"
-      ]
-    },
-    "jobs": {
-      "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::job.job",
-      "inversedBy": "applications"
+      "enum": ["pending", "accepted", "rejected"]
     }
   }
 }

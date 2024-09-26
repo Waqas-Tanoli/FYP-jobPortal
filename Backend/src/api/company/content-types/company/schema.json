@@ -43,16 +43,17 @@
     "description": {
       "type": "blocks"
     },
-    "company": {
+    "users_permissions_users": {
       "type": "relation",
-      "relation": "oneToMany",
+      "relation": "manyToMany",
+      "target": "plugin::users-permissions.user",
+      "inversedBy": "companies"
+    },
+    "companies": {
+      "type": "relation",
+      "relation": "manyToMany",
       "target": "api::job.job",
       "mappedBy": "jobs"
-    },
-    "users_permissions_user": {
-      "type": "relation",
-      "relation": "oneToOne",
-      "target": "plugin::users-permissions.user"
     }
   }
 }

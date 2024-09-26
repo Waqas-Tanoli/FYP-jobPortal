@@ -74,7 +74,8 @@
       ]
     },
     "Company": {
-      "type": "string"
+      "type": "string",
+      "unique": true
     },
     "Address": {
       "type": "text"
@@ -105,13 +106,20 @@
       "type": "text"
     },
     "files": {
+      "type": "media",
+      "multiple": false,
+      "required": false,
       "allowedTypes": [
         "files"
-      ],
-      "type": "media",
-      "multiple": false
+      ]
     },
-    "apply_jobs": {
+    "companies": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::company.company",
+      "mappedBy": "users_permissions_users"
+    },
+    "applications": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::apply-job.apply-job",

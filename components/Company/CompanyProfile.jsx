@@ -82,11 +82,11 @@ const CompanyProfile = () => {
   };
 
   const handleViewPostedJobs = () => {
-    router.push("/ViewPostedJobs");
+    router.push("/Jobs");
   };
 
   const handleViewCandidates = () => {
-    router.push("/ViewCandidates");
+    router.push("/view-candidates");
   };
 
   return (

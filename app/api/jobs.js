@@ -109,8 +109,21 @@ export const applyForJob = async (jobId, userId) => {
 };
 
 //api for job seeker to vview theier applied
-
 export const fetchAppliedJobs = async (userId) => {
+  try {
+    const response = await axiosClient.get(
+      `/apply-jobs?populate=jobs&filters[users_permissions_users][id][$eq]=${userId}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching applied jobs:", error);
+    throw error;
+  }
+};
+
+{
+  /*
+ export const fetchAppliedJobs = async (userId) => {
   try {
     const response = await axiosClient.get(
       `/apply-jobs?filters[users_permissions_users][id][$eq]=${userId}&populate[jobs][populate]=*`
@@ -124,4 +137,8 @@ export const fetchAppliedJobs = async (userId) => {
     );
     throw error;
   }
-};
+}; 
+  
+  
+  */
+}

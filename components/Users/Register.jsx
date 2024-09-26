@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 
 const SignUp = () => {
   const [profilePicture, setProfilePicture] = useState(null);
+
   const [formData, setFormData] = useState({
     username: "",
     email: "",
@@ -41,7 +42,6 @@ const SignUp = () => {
       const registerRes = await axiosClient.post("/auth/local/register", {
         ...formData,
         profilePicture: uploadedImage ? uploadedImage.id : null,
-        present,
       });
 
       const { jwt, user } = registerRes.data;
@@ -61,7 +61,6 @@ const SignUp = () => {
       });
       setProfilePicture(null);
     } catch (error) {
-      // Error notification
       toast.error("Error registering user. Please try again.");
       console.error("Error registering user:", error);
     } finally {
