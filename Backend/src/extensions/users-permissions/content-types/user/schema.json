@@ -119,11 +119,20 @@
       "target": "api::company.company",
       "mappedBy": "users_permissions_users"
     },
-    "applications": {
+    "jobs": {
       "type": "relation",
       "relation": "manyToMany",
-      "target": "api::apply-job.apply-job",
-      "mappedBy": "users_permissions_users"
+      "target": "api::job.job",
+      "inversedBy": "users_permissions_users"
+    },
+    "edu": {
+      "type": "string"
+    },
+    "skill": {
+      "type": "string"
+    },
+    "exp": {
+      "type": "string"
     }
   }
 }

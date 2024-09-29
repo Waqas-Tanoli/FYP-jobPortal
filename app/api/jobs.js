@@ -121,6 +121,21 @@ export const fetchAppliedJobs = async (userId) => {
   }
 };
 
+export const fetchJobEntry = async (jobId) => {
+  try {
+    const response = await axiosClient.get(`/jobs/${jobId}?populate=*`);
+    return response.data.data; // Adjusted to return the correct nested job data
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+// Function to update an existing job entry
+export const updateJobEntry = async (jobId, updatedJobData) => {
+  const response = await axiosClient.put(`/jobs/${jobId}`, updatedJobData);
+  return response.data;
+};
+
 {
   /*
  export const fetchAppliedJobs = async (userId) => {

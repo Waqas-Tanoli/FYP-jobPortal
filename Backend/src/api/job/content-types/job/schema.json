@@ -149,13 +149,8 @@
     },
     "users_permissions_users": {
       "type": "relation",
-      "relation": "oneToMany",
-      "target": "plugin::users-permissions.user"
-    },
-    "applications": {
-      "type": "relation",
       "relation": "manyToMany",
-      "target": "api::apply-job.apply-job",
+      "target": "plugin::users-permissions.user",
       "mappedBy": "jobs"
     }
   }

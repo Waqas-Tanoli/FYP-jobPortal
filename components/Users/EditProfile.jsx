@@ -17,7 +17,7 @@ const EditProfile = () => {
   const [profilePicture, setProfilePicture] = useState(null);
   const [currentProfilePicture, setCurrentProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter(); // Initialize router for redirection
+  const router = useRouter();
 
   useEffect(() => {
     const fetchUserProfile = async () => {
@@ -43,13 +43,13 @@ const EditProfile = () => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast.error("Failed to fetch profile. Please try again.");
-        // Redirect to login if error occurs due to no userId
+
         router.push("/Login");
       }
     };
 
     fetchUserProfile();
-  }, [router]); // Include router in dependency array
+  }, [router]);
 
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);

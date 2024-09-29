@@ -5,7 +5,6 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Link from "next/link";
 import { register } from "@/app/api/auth";
-import { useRouter } from "next/navigation";
 
 const EmployerSignUp = () => {
   const [username, setUsername] = useState("");
@@ -20,7 +19,6 @@ const EmployerSignUp = () => {
   const [website, setWebsite] = useState("");
   const [isCompany, setIsCompany] = useState(true);
   const [Company, setCompany] = useState("");
-  const router = useRouter();
 
   const handleFileChange = (e) => {
     setLogo(e.target.files[0]);

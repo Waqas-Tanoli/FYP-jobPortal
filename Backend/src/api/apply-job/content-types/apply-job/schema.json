@@ -12,15 +12,10 @@
   },
   "pluginOptions": {},
   "attributes": {
-    "JobId": {
-      "type": "uid",
-      "required": true
-    },
     "users_permissions_users": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "plugin::users-permissions.user",
-      "inversedBy": "applications"
+      "relation": "oneToMany",
+      "target": "plugin::users-permissions.user"
     },
     "applicationDate": {
       "type": "datetime"
@@ -35,9 +30,12 @@
     },
     "jobs": {
       "type": "relation",
-      "relation": "manyToMany",
-      "target": "api::job.job",
-      "inversedBy": "applications"
+      "relation": "oneToMany",
+      "target": "api::job.job"
+    },
+    "JobId": {
+      "type": "uid",
+      "required": true
     }
   }
 }
