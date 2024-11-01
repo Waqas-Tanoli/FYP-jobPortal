@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { getFilteredJobs } from "@/app/api/jobs";
+import Cookies from "js-cookie";
+import { toast } from "react-toastify";
 
 const FilteredJobsPage = () => {
   const [jobs, setJobs] = useState([]);
@@ -53,6 +55,26 @@ const FilteredJobsPage = () => {
     fetchFilteredJobs();
   }, [jobTitle, location, jobType, education, experienceLevel, salary]);
 
+  const getUserIdFromCookies = () => {
+    const userId = Cookies.get("userId");
+    return userId ? userId : null;
+  };
+
+  const handleApply = async (jobId) => {
+    const userId = getUserIdFromCookies();
+    if (!userId) {
+      toast.error("You must be logged in to apply for jobs.");
+      return;
+    }
+
+    try {
+      await applyForJob(jobId, userId);
+      toast.success("You have successfully applied for the job!");
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   if (loading) return <p>Loading jobs...</p>;
   if (error) return <p>{error}</p>;
 
@@ -100,7 +122,7 @@ const FilteredJobsPage = () => {
                     </p>
                     <div className="flex gap-2 mt-4">
                       <button
-                        onClick={() => handleApplyClick(job.slug)}
+                        onClick={() => handleApply(job.id)}
                         className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
                       >
                         Apply for Job

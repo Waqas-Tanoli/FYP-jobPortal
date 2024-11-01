@@ -34,7 +34,11 @@ module.exports = [
         },
         settings: {
           upload: {
-            maxFileSize: 10000000, // 10 MB limit, adjust as needed
+            maxFileSize: 10000000,
+
+            cors: {
+              origin: ["http://localhost:3000"],
+            },
           },
         },
       },

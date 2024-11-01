@@ -105,34 +105,20 @@
     "description": {
       "type": "text"
     },
-    "files": {
-      "type": "media",
-      "multiple": false,
-      "required": false,
-      "allowedTypes": [
-        "files"
-      ]
-    },
     "companies": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::company.company",
       "mappedBy": "users_permissions_users"
     },
+    "cvUrl": {
+      "type": "string"
+    },
     "jobs": {
       "type": "relation",
       "relation": "manyToMany",
       "target": "api::job.job",
-      "inversedBy": "users_permissions_users"
-    },
-    "edu": {
-      "type": "string"
-    },
-    "skill": {
-      "type": "string"
-    },
-    "exp": {
-      "type": "string"
+      "inversedBy": "users"
     }
   }
 }

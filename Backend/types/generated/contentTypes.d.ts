@@ -779,20 +779,17 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
     slogan: Attribute.Text;
     website: Attribute.String;
     description: Attribute.Text;
-    files: Attribute.Media<'files'>;
     companies: Attribute.Relation<
       'plugin::users-permissions.user',
       'manyToMany',
       'api::company.company'
     >;
+    cvUrl: Attribute.String;
     jobs: Attribute.Relation<
       'plugin::users-permissions.user',
       'manyToMany',
       'api::job.job'
     >;
-    edu: Attribute.String;
-    skill: Attribute.String;
-    exp: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     createdBy: Attribute.Relation<
@@ -1005,6 +1002,11 @@ export interface ApiJobJob extends Schema.CollectionType {
         };
       }>;
     users_permissions_users: Attribute.Relation<
+      'api::job.job',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    users: Attribute.Relation<
       'api::job.job',
       'manyToMany',
       'plugin::users-permissions.user'

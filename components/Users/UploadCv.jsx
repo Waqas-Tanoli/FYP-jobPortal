@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Cookies from "js-cookie"; // Import js-cookie
 import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function UploadCV() {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -28,13 +30,23 @@ export default function UploadCV() {
     }
 
     const formData = new FormData();
-    formData.append("cv", selectedFile);
+    formData.append("files", selectedFile);
 
     setIsSubmitting(true);
 
     try {
-      const res = await fetch("/api/uploadCV", {
+      const token = Cookies.get("token");
+
+      if (!token) {
+        setError("Authorization token is missing. Please log in again.");
+        return;
+      }
+
+      const res = await fetch("http://localhost:1337/api/upload", {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -42,13 +54,16 @@ export default function UploadCV() {
 
       if (res.ok) {
         toast.success("CV uploaded successfully!");
-
-        setUploadedUrl(data.url);
+        const completeUrl = new URL(data[0].url, "http://localhost:1337").href;
+        setUploadedUrl(completeUrl);
         setSelectedFile(null);
       } else {
-        setError(data.error || "Failed to upload CV. Please try again.");
+        setError(
+          data.error?.message || "Failed to upload CV. Please try again."
+        );
       }
     } catch (error) {
+      console.error("Upload error:", error); // Log the error for debugging
       setError("An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -89,21 +104,24 @@ export default function UploadCV() {
           </div>
         </form>
 
-        {/* Display uploaded file URL */}
         {uploadedUrl && (
           <div className="mt-4">
-            <p className="text-green-600">File uploaded: </p>
-            <a
-              href={uploadedUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-600 underline"
-            >
-              View CV
-            </a>
+            <p className="text-green-600">File uploaded:</p>
+            <div className="mt-4">
+              <a
+                href={uploadedUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                download="CV.pdf"
+                className="inline-block px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 transition duration-300"
+              >
+                Download CV
+              </a>
+            </div>
           </div>
         )}
       </div>
+      <ToastContainer />
     </div>
   );
 }

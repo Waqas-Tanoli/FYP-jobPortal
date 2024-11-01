@@ -6,23 +6,31 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Cookies from "js-cookie";
 import { login } from "@/app/api/auth";
+import { ClipLoader } from "react-spinners";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const token = Cookies.get("token");
+
     if (token) {
-      router.push("/");
+      setLoading(true);
+      setTimeout(() => {});
+    } else {
+      setLoading(false);
     }
   }, [router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
+
     try {
       const { user, jwt } = await login(email, password);
 
@@ -42,9 +50,11 @@ const Login = () => {
         toast.success(`Login successful! Welcome, ${user.username}`);
         router.push("/");
       } else {
+        setLoading(false);
         toast.error("Login failed. Please check your credentials.");
       }
     } catch (error) {
+      setLoading(false);
       console.error("Login error:", error);
       toast.error(
         error.message || "Login failed. Please check your credentials."
@@ -52,6 +62,15 @@ const Login = () => {
       setError(error.message || "Login failed. Please check your credentials.");
     }
   };
+
+  if (loading) {
+    // Show the loading spinner while checking token or after login form submission
+    return (
+      <div className="flex justify-center items-center min-h-screen bg-gray-100">
+        <ClipLoader color={"#4F46E5"} size={50} />{" "}
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100">
@@ -101,6 +120,7 @@ const Login = () => {
           <button
             type="submit"
             className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            disabled={loading}
           >
             Log In
           </button>
