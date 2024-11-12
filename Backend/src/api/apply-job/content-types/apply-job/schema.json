@@ -34,8 +34,7 @@
       "target": "api::job.job"
     },
     "JobId": {
-      "type": "uid",
-      "required": true
+      "type": "string"
     }
   }
 }

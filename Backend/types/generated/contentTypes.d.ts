@@ -831,7 +831,7 @@ export interface ApiApplyJobApplyJob extends Schema.CollectionType {
       'oneToMany',
       'api::job.job'
     >;
-    JobId: Attribute.UID & Attribute.Required;
+    JobId: Attribute.String;
     createdAt: Attribute.DateTime;
     updatedAt: Attribute.DateTime;
     publishedAt: Attribute.DateTime;

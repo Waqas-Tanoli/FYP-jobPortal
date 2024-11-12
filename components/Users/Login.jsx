@@ -21,6 +21,7 @@ const Login = () => {
     if (token) {
       setLoading(true);
       setTimeout(() => {});
+      router.push("/");
     } else {
       setLoading(false);
     }

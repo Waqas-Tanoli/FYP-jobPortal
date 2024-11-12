@@ -15,6 +15,8 @@ const MyProfile = () => {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [currentProfilePicture, setCurrentProfilePicture] = useState("");
+  const [cvUrl, setCvUrl] = useState("");
+  const [showConfirmation, setShowConfirmation] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -28,10 +30,20 @@ const MyProfile = () => {
           const userId = parsedUser.userId;
 
           const profile = await getUserProfile(userId);
+          console.log("User Profile:", profile); // Log the full profile for debugging
           setUser(profile);
 
           if (profile.profilePicture) {
             setCurrentProfilePicture(profile.profilePicture.url || "");
+          }
+
+          // Check how cvUrl is structured in the profile object
+          if (profile.cvUrl) {
+            setCvUrl(
+              typeof profile.cvUrl === "string"
+                ? profile.cvUrl
+                : profile.cvUrl.url || ""
+            );
           }
         } else {
           setError("No user data found.");
@@ -72,9 +84,10 @@ const MyProfile = () => {
   }
 
   const handleLogout = () => {
-    router.push("/Login");
     logout();
+    router.push("/Login");
   };
+
   const handleUpdateProfile = () => {
     router.push("/EditProfile");
   };
@@ -85,6 +98,26 @@ const MyProfile = () => {
 
   const handleCvUpload = () => {
     router.push("/Upload-CV");
+  };
+
+  const handleDownloadCV = () => {
+    if (cvUrl) {
+      setShowConfirmation(true);
+    } else {
+      alert("No CV uploaded yet.");
+    }
+  };
+
+  const confirmDownload = () => {
+    if (cvUrl) {
+      const link = document.createElement("a");
+      link.href = cvUrl;
+      link.download = "CV.pdf"; // Set the filename for the download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    setShowConfirmation(false);
   };
 
   return (
@@ -103,68 +136,59 @@ const MyProfile = () => {
         </MenuButton>
 
         <MenuItems className="absolute right-0 top-full mt-2 w-48 bg-white shadow-lg rounded-lg border border-gray-200 z-20">
-          <MenuItem>
-            {({ active }) => (
-              <button
-                onClick={handleUpdateProfile}
-                className={`block px-4 py-2 text-base ${
-                  active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                } transition-colors duration-200`}
-              >
-                Edit Profile
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ active }) => (
-              <button
-                onClick={handleCvUpload}
-                className={`block px-4 py-2 text-base ${
-                  active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                } transition-colors duration-200`}
-              >
-                Upload CV
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ active }) => (
-              <Link
-                href="/applied_jobs"
-                className={`block px-4 py-2 text-base ${
-                  active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                } transition-colors duration-200`}
-              >
-                View Applied Jobs
-              </Link>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ active }) => (
-              <button
-                onClick={handleFindJobs}
-                className={`block px-4 py-2 text-base ${
-                  active ? "bg-gray-100 text-gray-900" : "text-gray-700"
-                } transition-colors duration-200`}
-              >
-                Search Jobs
-              </button>
-            )}
-          </MenuItem>
-          <MenuItem>
-            {({ active }) => (
-              <button
-                onClick={handleLogout}
-                className={`block px-4 py-2 text-base text-red-600 ${
-                  active ? "bg-gray-100 text-gray-900" : ""
-                } transition-colors duration-200`}
-              >
-                Logout
-              </button>
-            )}
-          </MenuItem>
+          {[
+            { label: "Edit Profile", action: handleUpdateProfile },
+            { label: "Upload CV", action: handleCvUpload },
+            {
+              label: "View Applied Jobs",
+              action: () => router.push("/applied_jobs"),
+            },
+            { label: "Search Jobs", action: handleFindJobs },
+            { label: "Download CV", action: handleDownloadCV },
+            { label: "Logout", action: handleLogout, isLogout: true },
+          ].map((item) => (
+            <MenuItem key={item.label}>
+              {({ active }) => (
+                <button
+                  onClick={item.action}
+                  className={`block w-full text-left px-4 py-2 text-base ${
+                    active ? "bg-gray-100 text-gray-900" : "text-gray-700"
+                  } transition-colors duration-200 rounded-lg`}
+                >
+                  {item.isLogout ? (
+                    <span className="text-red-600">{item.label}</span>
+                  ) : (
+                    item.label
+                  )}
+                </button>
+              )}
+            </MenuItem>
+          ))}
         </MenuItems>
       </Menu>
+
+      {showConfirmation && (
+        <div className="fixed inset-0 flex items-center justify-center z-30 backdrop-blur-md">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-semibold mb-4">Confirm Download</h3>
+            <p>Are you sure you want to download your CV?</p>
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowConfirmation(false)}
+                className="mr-2 px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmDownload}
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+              >
+                Download Now
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

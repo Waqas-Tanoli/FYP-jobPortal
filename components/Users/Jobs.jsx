@@ -101,8 +101,13 @@ const Jobs = () => {
     }
 
     try {
-      await applyForJob(jobId, userId);
-      toast.success("You have successfully applied for the job!");
+      const applicationCreated = await applyForJob(jobId, userId);
+
+      if (applicationCreated) {
+        toast.success("You have successfully applied for the job!");
+      } else {
+        toast.error("You have already applied for this job.");
+      }
     } catch (error) {
       toast.error(error.message);
     }

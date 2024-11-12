@@ -9,8 +9,9 @@ import {
   FaBriefcase,
   FaMapMarkerAlt,
   FaCalendarAlt,
+  FaFileDownload,
 } from "react-icons/fa";
-
+import { MdOutlineFileDownload } from "react-icons/md";
 const ViewApplicants = () => {
   const [isCompany, setIsCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
@@ -57,7 +58,7 @@ const ViewApplicants = () => {
 
   // Fetch applicants for jobs posted by the logged-in company
   const fetchApplicantsForCompanyJobs = async (postedJobs) => {
-    const jobIds = postedJobs.map((job) => job.id); // Extract job IDs
+    const jobIds = postedJobs.map((job) => job.id);
     try {
       const response = await axiosClient.get(
         `/apply-jobs?populate=jobs&populate=users_permissions_users`
@@ -75,36 +76,41 @@ const ViewApplicants = () => {
     }
   };
 
+  // Open CV in a new tab
+  const openCV = (cvUrl) => {
+    window.open(cvUrl, "_blank");
+  };
+
   if (isCompany === null) {
     return <p className="text-center text-lg">Loading user data...</p>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-lg">
+    <div className="max-w-5xl mx-auto p-8 bg-gray-100 rounded-lg shadow-lg">
       {isCompany ? (
         <div>
-          <h2 className="text-3xl font-bold mb-6 text-blue-700">
+          <h2 className="text-4xl font-bold mb-8 text-indigo-600 text-center">
             Your Job Applicants
           </h2>
           {applicants.length > 0 ? (
-            <ul className="space-y-4">
+            <ul className="space-y-6">
               {applicants.map((applicant) => (
                 <li
                   key={applicant.id}
-                  className="bg-white shadow-md rounded-lg p-6 border border-gray-200 transition-transform transform hover:scale-105"
+                  className="bg-white shadow-lg rounded-lg p-8 border border-gray-200 hover:shadow-2xl transform transition-all duration-200 hover:scale-105"
                 >
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center">
-                      <FaUser className="text-blue-500 mr-2" />
-                      <p className="font-semibold text-lg">
+                  <div className="flex justify-between items-center mb-6">
+                    <div className="flex items-center space-x-4">
+                      <FaUser className="text-indigo-500 text-2xl" />
+                      <p className="text-xl font-semibold text-gray-800">
                         {
                           applicant?.attributes?.users_permissions_users
                             ?.data[0]?.attributes?.username
                         }
                       </p>
                     </div>
-                    <p className="text-sm text-gray-500 flex items-center">
-                      <FaCalendarAlt className="inline mr-1" />
+                    <p className="text-gray-500 flex items-center">
+                      <FaCalendarAlt className="inline mr-2 text-gray-400" />
                       <span>
                         Applied on:{" "}
                         {new Date(
@@ -114,9 +120,9 @@ const ViewApplicants = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-6 mb-4">
                     <p className="text-gray-700">
-                      <FaEnvelope className="inline mr-1" />
+                      <FaEnvelope className="inline mr-2 text-indigo-500" />
                       Email:{" "}
                       <span className="font-medium">
                         {
@@ -126,14 +132,14 @@ const ViewApplicants = () => {
                       </span>
                     </p>
                     <p className="text-gray-700">
-                      <FaBriefcase className="inline mr-1" />
+                      <FaBriefcase className="inline mr-2 text-indigo-500" />
                       Applied for:{" "}
                       <span className="font-medium">
                         {applicant?.attributes?.jobs.data[0]?.attributes?.title}
                       </span>
                     </p>
                     <p className="text-gray-700">
-                      <FaMapMarkerAlt className="inline mr-1" />
+                      <FaMapMarkerAlt className="inline mr-2 text-indigo-500" />
                       Location:{" "}
                       <span className="font-medium">
                         {applicant?.attributes?.jobs?.data[0]?.attributes
@@ -141,24 +147,43 @@ const ViewApplicants = () => {
                       </span>
                     </p>
                     <p className="text-gray-700">
-                      Company:{" "}
+                      <span className="font-semibold">Company:</span>{" "}
                       <span className="font-medium">
                         {applicant?.attributes?.jobs?.data[0]?.attributes
                           ?.Company || "N/A"}
                       </span>
                     </p>
                     <p className="text-gray-700">
-                      Job Status:{" "}
+                      <span className="font-semibold">Job Status:</span>{" "}
                       <span className="font-medium">
                         {applicant?.attributes?.Status}
                       </span>
                     </p>
+                    {applicant?.attributes?.users_permissions_users?.data[0]
+                      ?.attributes?.cvUrl ? (
+                      <button
+                        onClick={() =>
+                          openCV(
+                            applicant.attributes.users_permissions_users.data[0]
+                              .attributes.cvUrl
+                          )
+                        }
+                        className="flex items-center text-blue-600 font-semibold hover:text-blue-800"
+                      >
+                        <MdOutlineFileDownload className="mr-2 text-2xl" />
+                        Download CV
+                      </button>
+                    ) : (
+                      <p className="text-gray-500 mt-4 italic">
+                        CV not uploaded
+                      </p>
+                    )}
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-600 mt-4">No applicants yet.</p>
+            <p className="text-gray-600 mt-4 text-center">No applicants yet.</p>
           )}
         </div>
       ) : (

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import Cookies from "js-cookie"; // Import js-cookie
+import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function UploadCV() {
@@ -10,6 +11,7 @@ export default function UploadCV() {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadedUrl, setUploadedUrl] = useState("");
+  const [originalFileName, setOriginalFileName] = useState("");
 
   const handleFileChange = (e) => {
     const file = e.target.files[0];
@@ -29,12 +31,31 @@ export default function UploadCV() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("files", selectedFile);
-
     setIsSubmitting(true);
 
     try {
+      //  Upload CV to Cloudinary
+      const formData = new FormData();
+      formData.append("cv", selectedFile);
+
+      const cloudinaryRes = await fetch("/api/uploadCV", {
+        method: "POST",
+        body: formData,
+      });
+
+      const cloudinaryData = await cloudinaryRes.json();
+
+      if (!cloudinaryRes.ok) {
+        throw new Error(
+          cloudinaryData.error || "Failed to upload to Cloudinary"
+        );
+      }
+
+      const cloudinaryUrl = cloudinaryData.url;
+      const fileName = cloudinaryData.originalFileName;
+      setOriginalFileName(fileName);
+
+      //  Saving Cloudinary URL to Strapi
       const token = Cookies.get("token");
 
       if (!token) {
@@ -42,29 +63,34 @@ export default function UploadCV() {
         return;
       }
 
-      const res = await fetch("http://localhost:1337/api/upload", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const decodedToken = jwtDecode(token);
+      const userId = decodedToken.id;
 
-      const data = await res.json();
+      const strapiRes = await fetch(
+        `http://localhost:1337/api/users/${userId}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ cvUrl: cloudinaryUrl }),
+        }
+      );
 
-      if (res.ok) {
-        toast.success("CV uploaded successfully!");
-        const completeUrl = new URL(data[0].url, "http://localhost:1337").href;
-        setUploadedUrl(completeUrl);
-        setSelectedFile(null);
-      } else {
-        setError(
-          data.error?.message || "Failed to upload CV. Please try again."
+      if (!strapiRes.ok) {
+        const strapiData = await strapiRes.json();
+        throw new Error(
+          strapiData.error?.message || "Failed to save CV URL to Strapi"
         );
       }
+
+      toast.success("CV uploaded successfully!");
+      setUploadedUrl(cloudinaryUrl);
+      setSelectedFile(null);
     } catch (error) {
-      console.error("Upload error:", error); // Log the error for debugging
-      setError("An error occurred. Please try again.");
+      console.error("Upload error:", error);
+      setError(error.message || "An error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -107,12 +133,14 @@ export default function UploadCV() {
         {uploadedUrl && (
           <div className="mt-4">
             <p className="text-green-600">File uploaded:</p>
+            <p className="text-gray-700">CV : {originalFileName}</p>{" "}
+            {/* Display original file name */}
             <div className="mt-4">
               <a
                 href={uploadedUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                download="CV.pdf"
+                download={originalFileName}
                 className="inline-block px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 transition duration-300"
               >
                 Download CV

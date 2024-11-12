@@ -1,4 +1,6 @@
 import axiosClient from "../_utils/axiosClient";
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const getJobs = async () => {
   try {
@@ -86,6 +88,19 @@ export const getFilteredJobs = async (
 //apply for job api
 export const applyForJob = async (jobId, userId) => {
   try {
+    const existingApplication = await axiosClient.get("/apply-jobs", {
+      params: {
+        filters: {
+          jobs: jobId,
+          users_permissions_users: userId,
+        },
+      },
+    });
+
+    if (existingApplication.data?.data?.length > 0) {
+      return false;
+    }
+
     const response = await axiosClient.post("/apply-jobs", {
       data: {
         JobId: String(jobId),
@@ -95,15 +110,16 @@ export const applyForJob = async (jobId, userId) => {
         Status: "pending",
       },
     });
-    return response.data;
+
+    return true;
   } catch (error) {
     console.error(
       "Error applying for job:",
       error.response?.data || error.message
     );
     throw new Error(
-      "Failed to apply for the job: " + error.response?.data?.message ||
-        error.message
+      "Failed to apply for the job: " +
+        (error.response?.data?.error?.message || error.message)
     );
   }
 };
