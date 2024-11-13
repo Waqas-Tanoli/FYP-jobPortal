@@ -20,12 +20,20 @@ const ViewApplicants = () => {
 
   // Fetch user data from API
   useEffect(() => {
+    const fetchCompanyJobs = async (userId) => {
+      try {
+        const jobsData = await fetchPostedJobs(userId);
+        setJobs(jobsData.data);
+        fetchApplicantsForCompanyJobs(jobsData.data);
+      } catch (error) {
+        console.error("Error fetching jobs:", error);
+      }
+    };
+
     const fetchUserData = async () => {
       try {
         const response = await axiosClient.get("/users/me");
         const user = response.data;
-        console.log("Full User Data from API:", user);
-
         setUserId(user.id);
 
         const userIsCompany = Boolean(user.isCompany);
@@ -43,18 +51,6 @@ const ViewApplicants = () => {
 
     fetchUserData();
   }, []);
-
-  // Fetch company jobs
-  const fetchCompanyJobs = async (userId) => {
-    try {
-      const jobsData = await fetchPostedJobs(userId);
-      setJobs(jobsData.data);
-      // Fetch applicants for these jobs once jobs are loaded
-      fetchApplicantsForCompanyJobs(jobsData.data);
-    } catch (error) {
-      console.error("Error fetching jobs:", error);
-    }
-  };
 
   // Fetch applicants for jobs posted by the logged-in company
   const fetchApplicantsForCompanyJobs = async (postedJobs) => {

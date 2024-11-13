@@ -8,7 +8,8 @@ const ContactUs = () => {
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-4xl font-bold text-gray-800 mb-6">Contact Us</h2>
         <p className="text-lg text-gray-600 mb-12">
-          We're here to help! Reach out to us with any questions or feedback.
+          We&apos;re here to help! Reach out to us with any questions or
+          feedback.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">

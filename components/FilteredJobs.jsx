@@ -1,3 +1,4 @@
+// FilteredJobsPage.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +7,7 @@ import { getFilteredJobs } from "@/app/api/jobs";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
-const FilteredJobsPage = () => {
+const FilteredJobs = () => {
   const [jobs, setJobs] = useState([]);
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -32,16 +33,12 @@ const FilteredJobsPage = () => {
           experienceLevel,
           salary
         );
-        console.log("Filtered Jobs:", response);
 
         const jobData =
-          response.data?.map((job) => {
-            console.log("Job data:", job);
-            return {
-              id: job.id,
-              ...job.attributes,
-            };
-          }) || [];
+          response.data?.map((job) => ({
+            id: job.id,
+            ...job.attributes,
+          })) || [];
         setJobs(jobData);
         setTotalJobs(response.meta?.pagination?.total || 0);
         setLoading(false);
@@ -55,10 +52,7 @@ const FilteredJobsPage = () => {
     fetchFilteredJobs();
   }, [jobTitle, location, jobType, education, experienceLevel, salary]);
 
-  const getUserIdFromCookies = () => {
-    const userId = Cookies.get("userId");
-    return userId ? userId : null;
-  };
+  const getUserIdFromCookies = () => Cookies.get("userId");
 
   const handleApply = async (jobId) => {
     const userId = getUserIdFromCookies();
@@ -71,7 +65,7 @@ const FilteredJobsPage = () => {
       await applyForJob(jobId, userId);
       toast.success("You have successfully applied for the job!");
     } catch (error) {
-      toast.error(error.message);
+      toast.error("Error applying for job");
     }
   };
 
@@ -88,57 +82,54 @@ const FilteredJobsPage = () => {
         {totalJobs} job{totalJobs !== 1 ? "s" : ""} found
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-        {Array.isArray(jobs) && jobs.length > 0 ? (
-          jobs.map((job) => {
-            return (
-              <div
-                key={job.id}
-                className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col justify-between"
-              >
-                <div className="p-6 flex flex-col flex-grow">
-                  <h3 className="text-xl font-semibold text-gray-800 mb-2">
-                    {job.title}
-                  </h3>
-                  <div className="text-gray-700 mb-4 flex-grow">
-                    {job.jobDescription || "No description available"}
-                  </div>
-
-                  <div className="flex flex-col justify-between mt-auto">
-                    <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Company:</span>{" "}
-                      {job.Company}
-                    </p>
-                    <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Job Type:</span>{" "}
-                      {job.jobType}
-                    </p>
-                    <p className="text-gray-600 mb-2">
-                      <span className="font-semibold">Location:</span>{" "}
-                      {job.remoteOk ? "Remote" : job.location}
-                    </p>
-                    <p className="text-gray-600 mb-4">
-                      <span className="font-semibold">Salary:</span>{" "}
-                      {job.salary ? `$${job.salary}K` : "N/A"}
-                    </p>
-                    <div className="flex gap-2 mt-4">
-                      <button
-                        onClick={() => handleApply(job.id)}
-                        className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
-                      >
-                        Apply for Job
-                      </button>
-                      <button
-                        onClick={() => handleJobClick(job.slug)}
-                        className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors flex-1"
-                      >
-                        View Details
-                      </button>
-                    </div>
+        {jobs.length > 0 ? (
+          jobs.map((job) => (
+            <div
+              key={job.id}
+              className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col justify-between"
+            >
+              <div className="p-6 flex flex-col flex-grow">
+                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+                  {job.title}
+                </h3>
+                <div className="text-gray-700 mb-4 flex-grow">
+                  {job.jobDescription || "No description available"}
+                </div>
+                <div className="flex flex-col justify-between mt-auto">
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Company:</span>{" "}
+                    {job.Company}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Job Type:</span>{" "}
+                    {job.jobType}
+                  </p>
+                  <p className="text-gray-600 mb-2">
+                    <span className="font-semibold">Location:</span>{" "}
+                    {job.remoteOk ? "Remote" : job.location}
+                  </p>
+                  <p className="text-gray-600 mb-4">
+                    <span className="font-semibold">Salary:</span>{" "}
+                    {job.salary ? `$${job.salary}K` : "N/A"}
+                  </p>
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => handleApply(job.id)}
+                      className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
+                    >
+                      Apply for Job
+                    </button>
+                    <button
+                      onClick={() => handleJobClick(job.slug)}
+                      className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors flex-1"
+                    >
+                      View Details
+                    </button>
                   </div>
                 </div>
               </div>
-            );
-          })
+            </div>
+          ))
         ) : (
           <p className="text-gray-500 text-center">
             No jobs available at the moment.
@@ -149,4 +140,4 @@ const FilteredJobsPage = () => {
   );
 };
 
-export default FilteredJobsPage;
+export default FilteredJobs;

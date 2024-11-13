@@ -47,7 +47,7 @@ const AppliedJobs = () => {
   if (appliedJobs.length === 0) {
     return (
       <div className="text-center text-lg">
-        You haven't applied for any jobs yet.
+        You haven&apos;t applied for any jobs yet.
       </div>
     );
   }

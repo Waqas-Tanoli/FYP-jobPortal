@@ -1,9 +1,9 @@
-import FilteredJobs from "@/components/FilteredJobs";
+import FilteredJobsWrapper from "@/components/FilteredJobWrapper";
 
 const sortedJobs = () => {
   return (
     <div>
-      <FilteredJobs />
+      <FilteredJobsWrapper />
     </div>
   );
 };

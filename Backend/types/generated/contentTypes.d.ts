@@ -362,6 +362,254 @@ export interface AdminTransferTokenPermission extends Schema.CollectionType {
   };
 }
 
+export interface ApiApplyJobApplyJob extends Schema.CollectionType {
+  collectionName: 'apply_jobs';
+  info: {
+    singularName: 'apply-job';
+    pluralName: 'apply-jobs';
+    displayName: 'applications';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    users_permissions_users: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    applicationDate: Attribute.DateTime;
+    Status: Attribute.Enumeration<['pending', 'accepted', 'rejected']>;
+    jobs: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToMany',
+      'api::job.job'
+    >;
+    JobId: Attribute.String;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::apply-job.apply-job',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiCompanyCompany extends Schema.CollectionType {
+  collectionName: 'companies';
+  info: {
+    singularName: 'company';
+    pluralName: 'companies';
+    displayName: 'Company';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Attribute.String & Attribute.Required & Attribute.Unique;
+    location: Attribute.String;
+    logo: Attribute.Media<'images'> & Attribute.Required;
+    slogan: Attribute.Text &
+      Attribute.Required &
+      Attribute.SetMinMaxLength<{
+        maxLength: 180;
+      }>;
+    website: Attribute.String;
+    slug: Attribute.UID & Attribute.Required;
+    description: Attribute.Blocks;
+    users_permissions_users: Attribute.Relation<
+      'api::company.company',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    companies: Attribute.Relation<
+      'api::company.company',
+      'manyToMany',
+      'api::job.job'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::company.company',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::company.company',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
+export interface ApiJobJob extends Schema.CollectionType {
+  collectionName: 'jobs';
+  info: {
+    singularName: 'job';
+    pluralName: 'jobs';
+    displayName: 'Job';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    title: Attribute.String & Attribute.Required;
+    remoteOk: Attribute.Boolean &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    datePosted: Attribute.Date &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    jobType: Attribute.Enumeration<
+      ['Full-Time', 'Part-Time', 'Internship', 'Contract']
+    > &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    education: Attribute.Enumeration<
+      ['Matric', 'F.Sc', 'Bachelors', 'Masters', 'Ph.D', 'M.phill']
+    > &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    salary: Attribute.BigInteger &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    experienceLevel: Attribute.Enumeration<
+      ['Tech-lead', 'Senior', 'Mediocre', 'Junior', 'Fresher']
+    > &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    slug: Attribute.UID &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    jobs: Attribute.Relation<
+      'api::job.job',
+      'manyToMany',
+      'api::company.company'
+    >;
+    Industry: Attribute.Enumeration<
+      ['Business', 'Banking', 'Education', 'Telecommunication', 'Others']
+    > &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    location: Attribute.String &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    Company: Attribute.String &
+      Attribute.Required &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    lastDateToApply: Attribute.Date &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    jobDescription: Attribute.Text &
+      Attribute.SetPluginOptions<{
+        i18n: {
+          localized: true;
+        };
+      }>;
+    users_permissions_users: Attribute.Relation<
+      'api::job.job',
+      'oneToMany',
+      'plugin::users-permissions.user'
+    >;
+    users: Attribute.Relation<
+      'api::job.job',
+      'manyToMany',
+      'plugin::users-permissions.user'
+    >;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<'api::job.job', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<'api::job.job', 'oneToOne', 'admin::user'> &
+      Attribute.Private;
+  };
+}
+
+export interface ApiReviewCardReviewCard extends Schema.CollectionType {
+  collectionName: 'review_cards';
+  info: {
+    singularName: 'review-card';
+    pluralName: 'review-cards';
+    displayName: 'ReviewCard';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    Name: Attribute.String & Attribute.Required;
+    Review: Attribute.Blocks & Attribute.Required;
+    Picture: Attribute.Media<'images'>;
+    Country: Attribute.String & Attribute.Required;
+    createdAt: Attribute.DateTime;
+    updatedAt: Attribute.DateTime;
+    publishedAt: Attribute.DateTime;
+    createdBy: Attribute.Relation<
+      'api::review-card.review-card',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+    updatedBy: Attribute.Relation<
+      'api::review-card.review-card',
+      'oneToOne',
+      'admin::user'
+    > &
+      Attribute.Private;
+  };
+}
+
 export interface PluginUploadFile extends Schema.CollectionType {
   collectionName: 'files';
   info: {
@@ -807,254 +1055,6 @@ export interface PluginUsersPermissionsUser extends Schema.CollectionType {
   };
 }
 
-export interface ApiApplyJobApplyJob extends Schema.CollectionType {
-  collectionName: 'apply_jobs';
-  info: {
-    singularName: 'apply-job';
-    pluralName: 'apply-jobs';
-    displayName: 'applications';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    users_permissions_users: Attribute.Relation<
-      'api::apply-job.apply-job',
-      'oneToMany',
-      'plugin::users-permissions.user'
-    >;
-    applicationDate: Attribute.DateTime;
-    Status: Attribute.Enumeration<['pending', 'accepted', 'rejected']>;
-    jobs: Attribute.Relation<
-      'api::apply-job.apply-job',
-      'oneToMany',
-      'api::job.job'
-    >;
-    JobId: Attribute.String;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::apply-job.apply-job',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::apply-job.apply-job',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiCompanyCompany extends Schema.CollectionType {
-  collectionName: 'companies';
-  info: {
-    singularName: 'company';
-    pluralName: 'companies';
-    displayName: 'Company';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    name: Attribute.String & Attribute.Required & Attribute.Unique;
-    location: Attribute.String;
-    logo: Attribute.Media<'images'> & Attribute.Required;
-    slogan: Attribute.Text &
-      Attribute.Required &
-      Attribute.SetMinMaxLength<{
-        maxLength: 180;
-      }>;
-    website: Attribute.String;
-    slug: Attribute.UID & Attribute.Required;
-    description: Attribute.Blocks;
-    users_permissions_users: Attribute.Relation<
-      'api::company.company',
-      'manyToMany',
-      'plugin::users-permissions.user'
-    >;
-    companies: Attribute.Relation<
-      'api::company.company',
-      'manyToMany',
-      'api::job.job'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::company.company',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::company.company',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
-export interface ApiJobJob extends Schema.CollectionType {
-  collectionName: 'jobs';
-  info: {
-    singularName: 'job';
-    pluralName: 'jobs';
-    displayName: 'Job';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    title: Attribute.String & Attribute.Required;
-    remoteOk: Attribute.Boolean &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    datePosted: Attribute.Date &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    jobType: Attribute.Enumeration<
-      ['Full-Time', 'Part-Time', 'Internship', 'Contract']
-    > &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    education: Attribute.Enumeration<
-      ['Matric', 'F.Sc', 'Bachelors', 'Masters', 'Ph.D', 'M.phill']
-    > &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    salary: Attribute.BigInteger &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    experienceLevel: Attribute.Enumeration<
-      ['Tech-lead', 'Senior', 'Mediocre', 'Junior', 'Fresher']
-    > &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    slug: Attribute.UID &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    jobs: Attribute.Relation<
-      'api::job.job',
-      'manyToMany',
-      'api::company.company'
-    >;
-    Industry: Attribute.Enumeration<
-      ['Business', 'Banking', 'Education', 'Telecommunication', 'Others']
-    > &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    location: Attribute.String &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    Company: Attribute.String &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    lastDateToApply: Attribute.Date &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    jobDescription: Attribute.Text &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
-    users_permissions_users: Attribute.Relation<
-      'api::job.job',
-      'oneToMany',
-      'plugin::users-permissions.user'
-    >;
-    users: Attribute.Relation<
-      'api::job.job',
-      'manyToMany',
-      'plugin::users-permissions.user'
-    >;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<'api::job.job', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<'api::job.job', 'oneToOne', 'admin::user'> &
-      Attribute.Private;
-  };
-}
-
-export interface ApiReviewCardReviewCard extends Schema.CollectionType {
-  collectionName: 'review_cards';
-  info: {
-    singularName: 'review-card';
-    pluralName: 'review-cards';
-    displayName: 'ReviewCard';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    Name: Attribute.String & Attribute.Required;
-    Review: Attribute.Blocks & Attribute.Required;
-    Picture: Attribute.Media<'images'>;
-    Country: Attribute.String & Attribute.Required;
-    createdAt: Attribute.DateTime;
-    updatedAt: Attribute.DateTime;
-    publishedAt: Attribute.DateTime;
-    createdBy: Attribute.Relation<
-      'api::review-card.review-card',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-    updatedBy: Attribute.Relation<
-      'api::review-card.review-card',
-      'oneToOne',
-      'admin::user'
-    > &
-      Attribute.Private;
-  };
-}
-
 declare module '@strapi/types' {
   export module Shared {
     export interface ContentTypes {
@@ -1065,6 +1065,10 @@ declare module '@strapi/types' {
       'admin::api-token-permission': AdminApiTokenPermission;
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
+      'api::apply-job.apply-job': ApiApplyJobApplyJob;
+      'api::company.company': ApiCompanyCompany;
+      'api::job.job': ApiJobJob;
+      'api::review-card.review-card': ApiReviewCardReviewCard;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::content-releases.release': PluginContentReleasesRelease;
@@ -1073,10 +1077,6 @@ declare module '@strapi/types' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
-      'api::apply-job.apply-job': ApiApplyJobApplyJob;
-      'api::company.company': ApiCompanyCompany;
-      'api::job.job': ApiJobJob;
-      'api::review-card.review-card': ApiReviewCardReviewCard;
     }
   }
 }

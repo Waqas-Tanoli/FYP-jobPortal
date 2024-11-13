@@ -6,6 +6,7 @@ import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/navigation"; // Use Next.js router
+import Image from "next/image";
 
 const EditProfile = () => {
   const [formData, setFormData] = useState({
@@ -179,7 +180,9 @@ const EditProfile = () => {
             </label>
             {currentProfilePicture && (
               <div className="mb-4">
-                <img
+                <Image
+                  width={28}
+                  height={28}
                   src={currentProfilePicture}
                   alt="Current Profile Picture"
                   className="w-28 h-28 object-cover rounded-md"
