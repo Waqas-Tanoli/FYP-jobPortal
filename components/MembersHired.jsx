@@ -22,15 +22,23 @@ const MembersHired = () => {
   }, []);
 
   return (
-    <div className="flex justify-center mt-10 bg-[#8E3CCB] p-10 rounded-sm text-white shadow-md">
-      <div className="flex flex-col items-center space-y-10">
-        <h1 className="text-4xl font-bold">Our Members Have Been Hired By*</h1>
-        <div className="flex flex-wrap justify-around w-full gap-14">
+    <div className="flex justify-center mt-10 bg-[#8E3CCB] p-8 md:p-10 rounded-sm text-white shadow-md">
+      <div className="flex flex-col items-center w-full space-y-6 md:space-y-10">
+        {/* Title */}
+        <h1 className="text-2xl md:text-4xl font-bold text-center">
+          Our Members Have Been Hired By*
+        </h1>
+
+        {/* Companies Section */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 w-full">
           {error ? (
-            <p className="text-red-300">{error}</p>
+            <p className="col-span-full text-center text-red-300">{error}</p>
           ) : Array.isArray(companies) && companies.length > 0 ? (
             companies.map((item, index) => (
-              <div key={index} className="flex items-center space-x-4 p-5">
+              <div
+                key={index}
+                className="flex flex-col items-center space-y-2 text-center"
+              >
                 <Image
                   src={
                     item.attributes?.logo?.data?.attributes?.url ||
@@ -41,13 +49,13 @@ const MembersHired = () => {
                   height={60}
                   className="rounded-full"
                 />
-                <p className="text-lg font-medium">
+                <p className="text-sm md:text-lg font-medium">
                   {item.attributes?.name || "Unknown Company"}
                 </p>
               </div>
             ))
           ) : (
-            <p>No companies available</p>
+            <p className="col-span-full text-center">No companies available</p>
           )}
         </div>
       </div>

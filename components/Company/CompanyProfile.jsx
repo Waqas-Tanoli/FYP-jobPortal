@@ -14,6 +14,7 @@ const CompanyProfile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+
   const router = useRouter();
 
   useEffect(() => {
@@ -101,8 +102,8 @@ const CompanyProfile = () => {
                   "/default.jpeg"
                 }
                 alt={user.username}
-                width={40} // Adjust width as needed
-                height={40} // Adjust height as needed
+                width={40}
+                height={40}
                 className="rounded-full border border-gray-300 object-cover"
               />
               <span className="font-semibold text-lg">{user.username}</span>

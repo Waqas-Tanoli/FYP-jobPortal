@@ -36,18 +36,23 @@ const ReviewCards = () => {
         <p className="text-red-500">{error}</p>
       ) : (
         <Swiper
-          slidesPerView={3}
+          slidesPerView={1}
           spaceBetween={20}
           pagination={{ clickable: true }}
           modules={[Pagination]}
           className="mySwiper"
+          breakpoints={{
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 5 },
+          }}
         >
           {Array.isArray(reviews) && reviews.length > 0 ? (
             reviews.map((item, index) => {
               const reviewText = reviewTextExtractor(item);
               const imageUrl =
                 item?.attributes?.Picture?.data?.attributes?.url ||
-                "/default-image.jpg"; // Default image if none exists
+                "/default-image.jpg";
 
               return (
                 <SwiperSlide key={index}>

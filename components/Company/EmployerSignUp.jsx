@@ -1,69 +1,78 @@
 "use client";
 
+import axiosClient from "@/app/_utils/axiosClient";
+import Cookies from "js-cookie";
 import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Link from "next/link";
-import { register } from "@/app/api/auth";
 
 const EmployerSignUp = () => {
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
   const [logo, setLogo] = useState(null);
-  const [location, setLocation] = useState("");
-  const [slogan, setSlogan] = useState("");
-  const [description, setDescription] = useState("");
-  const [website, setWebsite] = useState("");
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    location: "",
+    slogan: "",
+    description: "",
+    website: "",
+    Company: "",
+  });
+
+  const [error, setError] = useState("");
+
   const [isCompany, setIsCompany] = useState(true);
-  const [Company, setCompany] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleFileChange = (e) => {
     setLogo(e.target.files[0]);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      await register(
-        username,
-        email,
-        password,
-        undefined,
-        Company,
-        undefined,
-        isCompany,
-        location,
-        logo,
-        slogan,
-        website,
-        description
-      );
-
-      setSuccess(true);
-      toast.success("Registration successful! Redirecting to login...");
-    } catch (err) {
-      setError(err.message || "An error occurred during registration");
-      toast.error(err.message || "An error occurred during registration");
-    }
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  if (success) {
-    return (
-      <div className="flex justify-center items-center h-screen bg-gray-50">
-        <div className="text-center bg-white p-8 rounded-lg shadow-lg">
-          <p className="text-lg font-semibold mb-4">Registration successful!</p>
-          <Link href="/Login" className="text-blue-600 hover:underline">
-            Go to Login
-          </Link>
-          <ToastContainer />
-        </div>
-      </div>
-    );
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let uploadedImage = null;
+      if (logo) {
+        const form = new FormData();
+        form.append("files", logo);
+        const uploadRes = await axiosClient.post("/upload", form);
+        uploadedImage = uploadRes.data[0];
+      }
+
+      const registerRes = await axiosClient.post("/auth/local/register", {
+        ...formData,
+        logo: uploadedImage ? uploadedImage.id : null,
+      });
+      const { jwt, user } = registerRes.data;
+      Cookies.set("jwt", jwt, { expires: 7 });
+      Cookies.set("user", JSON.stringify(user), { expires: 7 });
+
+      toast.success("Registration successful!");
+
+      setFormData({
+        username: "",
+        email: "",
+        password: "",
+        location: "",
+        slogan: "",
+        description: "",
+        website: "",
+        Company: "",
+      });
+      setLogo(null);
+    } catch (err) {
+      toast.error("Error registering user. Please try again.");
+      console.error("Error registering user:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100 p-6">
@@ -86,8 +95,8 @@ const EmployerSignUp = () => {
               name="username"
               placeholder="Enter username for this website, this can be same as your company name"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formData.username}
+              onChange={handleChange}
               required
             />
           </div>
@@ -104,8 +113,8 @@ const EmployerSignUp = () => {
               name="Company"
               placeholder="Enter Name of your company or Firm"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={Company}
-              onChange={(e) => setCompany(e.target.value)}
+              value={formData.Company}
+              onChange={handleChange}
               required
             />
           </div>
@@ -121,8 +130,8 @@ const EmployerSignUp = () => {
               type="email"
               name="email"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={formData.email}
+              onChange={handleChange}
               required
             />
           </div>
@@ -138,8 +147,8 @@ const EmployerSignUp = () => {
               type="password"
               name="password"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={formData.password}
+              onChange={handleChange}
               required
             />
           </div>
@@ -155,8 +164,8 @@ const EmployerSignUp = () => {
               type="text"
               name="location"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
+              value={formData.location}
+              onChange={handleChange}
               required
             />
           </div>
@@ -172,8 +181,8 @@ const EmployerSignUp = () => {
               type="text"
               name="slogan"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={slogan}
-              onChange={(e) => setSlogan(e.target.value)}
+              value={formData.slogan}
+              onChange={handleChange}
             />
           </div>
           <div className="mb-6">
@@ -188,8 +197,8 @@ const EmployerSignUp = () => {
               type="url"
               name="website"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={website}
-              onChange={(e) => setWebsite(e.target.value)}
+              value={formData.website}
+              onChange={handleChange}
             />
           </div>
           <div className="mb-6">
@@ -203,8 +212,8 @@ const EmployerSignUp = () => {
               id="description"
               name="description"
               className="w-full p-3 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              value={formData.description}
+              onChange={handleChange}
             />
           </div>
           <div className="mb-6">
@@ -218,17 +227,18 @@ const EmployerSignUp = () => {
               id="logo"
               type="file"
               name="logo"
-              className="w-full p-3 border border-gray-300 rounded-md shadow-sm"
               onChange={handleFileChange}
               accept="image/*"
+              className="w-full p-2 border border-gray-300 rounded-md"
             />
           </div>
 
           <button
             type="submit"
             className="w-full bg-indigo-600 text-white py-2 px-4 rounded-md shadow hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            disabled={loading}
           >
-            Register Company
+            {loading ? "Registering Company..." : "Register"}
           </button>
         </form>
         <ToastContainer />

@@ -9,7 +9,7 @@
   padding: 20px;
   margin: 20px auto 0;
   max-width: 350px;
-  height: 300px;
+  height: auto;
   box-sizing: border-box;
 }
 
