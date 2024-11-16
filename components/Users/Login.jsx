@@ -20,7 +20,6 @@ const Login = () => {
 
     if (token) {
       setLoading(true);
-      setTimeout(() => {});
       router.push("/");
     } else {
       setLoading(false);
@@ -65,77 +64,73 @@ const Login = () => {
   };
 
   if (loading) {
-    // Show the loading spinner while checking token or after login form submission
     return (
-      <div className="flex justify-center items-center min-h-screen bg-gray-100">
-        <ClipLoader color={"#4F46E5"} size={50} />{" "}
+      <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-[#A96EFF] to-[#5932A7]">
+        <ClipLoader color={"#A96EFF"} size={50} />
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="w-full max-w-md p-8 bg-white rounded-lg shadow-lg">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Login</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Email Input */}
-          <div className="mb-4">
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-[#A96EFF] to-[#5932A7] p-6">
+      <div className="w-full max-w-lg bg-[#F5E8FF] rounded-lg shadow-xl p-8 border border-[#A96EFF]">
+        <h2 className="text-4xl font-bold text-center mb-8 text-[#5932A7]">
+          Login to Your Account
+        </h2>
+        {error && <p className="text-red-500 mb-4">{error}</p>}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="flex flex-col">
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-[#3E2069] mb-1"
             >
-              Email
+              Email Address
             </label>
             <input
-              type="email"
               id="email"
+              type="email"
+              name="email"
+              placeholder="Your email"
+              className="p-3 border-2 border-[#A96EFF] rounded-lg bg-white text-[#3E2069] placeholder-[#B68AC5] focus:ring-2 focus:ring-[#A96EFF] focus:outline-none"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Enter your email"
               required
             />
           </div>
-
-          {/* Password Input */}
-          <div className="mb-4">
+          <div className="flex flex-col">
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-[#3E2069] mb-1"
             >
               Password
             </label>
             <input
-              type="password"
               id="password"
+              type="password"
+              name="password"
+              placeholder="Your password"
+              className="p-3 border-2 border-[#A96EFF] rounded-lg bg-white text-[#3E2069] placeholder-[#B68AC5] focus:ring-2 focus:ring-[#A96EFF] focus:outline-none"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-              placeholder="Enter your password"
               required
             />
           </div>
-
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-indigo-600 text-white font-semibold rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-[#A96EFF] to-[#7B4FA2] text-white font-semibold shadow-lg hover:opacity-90 focus:ring-4 focus:ring-[#A96EFF] focus:outline-none"
             disabled={loading}
           >
-            Log In
+            {loading ? "Logging In..." : "Log In"}
           </button>
-
-          {/* Register Redirection */}
-          <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Don&apos;t have an account?{" "}
-              <a href="/Register" className="text-indigo-600 hover:underline">
-                Sign Up
-              </a>
-            </p>
-          </div>
         </form>
+        <div className="mt-6 text-center">
+          <p className="text-sm text-[#3E2069]">
+            Don&apos;t have an account?{" "}
+            <a href="/Register" className="text-[#A96EFF] hover:underline">
+              Sign Up
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );

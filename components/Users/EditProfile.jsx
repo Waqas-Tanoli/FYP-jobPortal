@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/navigation"; // Use Next.js router
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 
 const EditProfile = () => {
@@ -15,6 +15,7 @@ const EditProfile = () => {
     Company: "",
     Address: "",
   });
+
   const [profilePicture, setProfilePicture] = useState(null);
   const [currentProfilePicture, setCurrentProfilePicture] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -44,7 +45,6 @@ const EditProfile = () => {
       } catch (error) {
         console.error("Error fetching profile:", error);
         toast.error("Failed to fetch profile. Please try again.");
-
         router.push("/Login");
       }
     };
@@ -84,7 +84,6 @@ const EditProfile = () => {
       });
 
       toast.success("Profile updated successfully!");
-
       setCurrentProfilePicture(
         uploadedImage ? uploadedImage.url : currentProfilePicture
       );
@@ -97,95 +96,70 @@ const EditProfile = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <div className="max-w-md w-full bg-white p-8 border border-gray-300 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Edit Profile</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Username
-            </label>
-            <input
-              type="text"
-              name="username"
-              id="username"
-              placeholder="Enter your username"
-              value={formData.username}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Email
-            </label>
-            <input
-              type="email"
-              name="email"
-              id="email"
-              placeholder="Enter your email"
-              value={formData.email}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              required
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="Company"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Company
-            </label>
-            <input
-              type="text"
-              name="Company"
-              id="Company"
-              placeholder="Enter your company name"
-              value={formData.Company}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-          <div>
-            <label
-              htmlFor="Address"
-              className="block text-sm font-medium text-gray-700"
-            >
-              Address
-            </label>
-            <input
-              type="text"
-              name="Address"
-              id="Address"
-              placeholder="Enter your address"
-              value={formData.Address}
-              onChange={handleChange}
-              className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
+    <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-[#A96EFF] to-[#5932A7] p-6">
+      <div className="w-full max-w-2xl bg-[#F5E8FF] rounded-lg shadow-xl p-8 border border-[#A96EFF]">
+        <h2 className="text-4xl font-bold text-center mb-8 text-[#5932A7]">
+          Edit Profile
+        </h2>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {[
+            {
+              id: "username",
+              label: "Username",
+              placeholder: "Enter your username",
+            },
+            {
+              id: "Company",
+              label: "Company Name",
+              placeholder: "Your company's name",
+            },
+            {
+              id: "email",
+              label: "Email Address",
+              type: "email",
+              placeholder: "Your email",
+            },
+            {
+              id: "Address",
+              label: "Address",
+              placeholder: "Enter your address",
+            },
+          ].map((field) => (
+            <div className="flex flex-col" key={field.id}>
+              <label
+                htmlFor={field.id}
+                className="text-sm font-medium text-[#3E2069] mb-1"
+              >
+                {field.label}
+              </label>
+              <input
+                id={field.id}
+                type={field.type || "text"}
+                name={field.id}
+                placeholder={field.placeholder}
+                className="p-3 border-2 border-[#A96EFF] rounded-lg bg-white text-[#3E2069] placeholder-[#B68AC5] focus:ring-2 focus:ring-[#A96EFF] focus:outline-none"
+                value={formData[field.id]}
+                onChange={handleChange}
+                required={field.id !== "Company" && field.id !== "Address"}
+              />
+            </div>
+          ))}
+
           <div>
             <label
               htmlFor="profilePicture"
-              className="block text-sm font-medium text-gray-700"
+              className="text-sm font-medium text-[#3E2069] mb-1"
             >
               Profile Picture
             </label>
             {currentProfilePicture && (
               <div className="mb-4">
                 <Image
-                  width={28}
-                  height={28}
+                  width={80}
+                  height={80}
                   src={currentProfilePicture}
                   alt="Current Profile Picture"
-                  className="w-28 h-28 object-cover rounded-md"
+                  className="w-20 h-20 object-cover rounded-full"
                 />
               </div>
             )}
@@ -195,13 +169,13 @@ const EditProfile = () => {
               id="profilePicture"
               onChange={handleFileChange}
               accept="image/*"
-              className="w-full p-2 border border-gray-300 rounded-md"
+              className="block w-full p-2 border-2 border-[#A96EFF] rounded-lg bg-[#EFE7FF] text-[#3E2069]"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+            className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-[#A96EFF] to-[#7B4FA2] text-white font-semibold shadow-lg hover:opacity-90 focus:ring-4 focus:ring-[#A96EFF] focus:outline-none"
             disabled={loading}
           >
             {loading ? "Updating..." : "Update Profile"}

@@ -9,6 +9,7 @@ export const getUserProfile = async (userId) => {
       {
         populate: {
           profilePicture: true,
+          logo: true,
         },
       },
       { encodeValuesOnly: true }

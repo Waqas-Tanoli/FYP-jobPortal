@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
-import Link from "next/link";
 import { getUserProfile } from "@/app/api/profile";
 import { Menu, MenuButton, MenuItems, MenuItem } from "@headlessui/react";
 import { MdKeyboardArrowDown } from "react-icons/md";
@@ -30,7 +29,7 @@ const MyProfile = () => {
           const userId = parsedUser.userId;
 
           const profile = await getUserProfile(userId);
-          console.log("User Profile:", profile); // Log the full profile for debugging
+          console.log("User Profile:", profile);
           setUser(profile);
 
           if (profile.profilePicture) {
@@ -112,7 +111,7 @@ const MyProfile = () => {
     if (cvUrl) {
       const link = document.createElement("a");
       link.href = cvUrl;
-      link.download = "CV.pdf"; // Set the filename for the download
+      link.download = "CV.pdf";
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);

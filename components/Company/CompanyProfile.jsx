@@ -14,6 +14,7 @@ const CompanyProfile = () => {
   const [user, setUser] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [CurrentLogo, setCurrentLogo] = useState("");
 
   const router = useRouter();
 
@@ -29,6 +30,12 @@ const CompanyProfile = () => {
 
           const profile = await getUserProfile(userId);
           setUser(profile);
+
+          if (profile.logo && profile.logo.url) {
+            setCurrentLogo(profile.logo.url);
+          } else {
+            setCurrentLogo("/default.jpeg");
+          }
           console.log("Company Profile", profile);
         } else {
           setError("No user data found.");
@@ -75,7 +82,7 @@ const CompanyProfile = () => {
   };
 
   const handleUpdateProfile = () => {
-    router.push("/EditProfile");
+    router.push("/Edit-Com-Prof");
   };
 
   const handlePostJob = () => {
@@ -97,10 +104,7 @@ const CompanyProfile = () => {
           <>
             <Menu.Button className="flex items-center space-x-2 px-4 py-2 text-gray-800 rounded-lg hover:bg-gray-100 transition-all duration-200 focus:outline-none">
               <Image
-                src={
-                  user.attributes?.profilePicture?.data?.attributes?.url ||
-                  "/default.jpeg"
-                }
+                src={CurrentLogo || "/default.jpeg"}
                 alt={user.username}
                 width={40}
                 height={40}

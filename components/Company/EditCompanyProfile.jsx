@@ -1,25 +1,63 @@
 "use client";
 
 import axiosClient from "@/app/_utils/axiosClient";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
 
-const SignUp = () => {
-  const [profilePicture, setProfilePicture] = useState(null);
-
+const EditCompanyProfile = () => {
   const [formData, setFormData] = useState({
     username: "",
     email: "",
-    password: "",
     Company: "",
-    Address: "",
+    location: "",
+    slogan: "",
+    website: "",
+    description: "",
   });
+
+  const [logo, setLogo] = useState(null);
+  const [currentLogo, setCurrentLogo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const userId = Cookies.get("userId");
+        if (!userId) {
+          throw new Error("No userId found in cookies.");
+        }
+
+        const response = await axiosClient.get(`/users/${userId}`);
+        const user = response.data;
+
+        setFormData({
+          username: user.username || "",
+          email: user.email || "",
+          Company: user.Company || "",
+          location: user.location || "",
+          slogan: user.slogan || "",
+          website: user.website || "",
+          description: user.description || "",
+        });
+
+        setCurrentLogo(user.logo ? user.logo.url : null);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+        toast.error("Failed to fetch profile. Please try again.");
+        router.push("/Login");
+      }
+    };
+
+    fetchUserProfile();
+  }, [router]);
 
   const handleFileChange = (e) => {
-    setProfilePicture(e.target.files[0]);
+    setLogo(e.target.files[0]);
   };
 
   const handleChange = (e) => {
@@ -32,37 +70,30 @@ const SignUp = () => {
 
     try {
       let uploadedImage = null;
-      if (profilePicture) {
+      if (logo) {
         const form = new FormData();
-        form.append("files", profilePicture);
+        form.append("files", logo);
         const uploadRes = await axiosClient.post("/upload", form);
         uploadedImage = uploadRes.data[0];
       }
 
-      const registerRes = await axiosClient.post("/auth/local/register", {
+      const userId = Cookies.get("userId");
+      if (!userId) {
+        throw new Error("No userId found in cookies.");
+      }
+
+      const updateRes = await axiosClient.put(`/users/${userId}`, {
         ...formData,
-        profilePicture: uploadedImage ? uploadedImage.id : null,
+        logo: uploadedImage ? uploadedImage.id : null,
       });
 
-      const { jwt, user } = registerRes.data;
-
-      Cookies.set("jwt", jwt, { expires: 7 });
-      Cookies.set("user", JSON.stringify(user), { expires: 7 });
-
-      toast.success("Registration successful!");
-
-      // Clear the form after success
-      setFormData({
-        username: "",
-        email: "",
-        password: "",
-        Company: "",
-        Address: "",
-      });
-      setProfilePicture(null);
+      toast.success("Profile updated successfully!");
+      setCurrentProfilePicture(
+        uploadedImage ? uploadedImage.url : currentProfilePicture
+      );
     } catch (error) {
-      toast.error("Error registering user. Please try again.");
-      console.error("Error registering user:", error);
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -72,7 +103,7 @@ const SignUp = () => {
     <div className="flex justify-center items-center min-h-screen bg-gradient-to-r from-[#A96EFF] to-[#5932A7] p-6">
       <div className="w-full max-w-2xl bg-[#F5E8FF] rounded-lg shadow-xl p-8 border border-[#A96EFF]">
         <h2 className="text-4xl font-bold text-center mb-8 text-[#5932A7]">
-          Register Your Account
+          Edit Profile
         </h2>
         <form onSubmit={handleSubmit} className="space-y-6">
           {[
@@ -93,15 +124,24 @@ const SignUp = () => {
               placeholder: "Your email",
             },
             {
-              id: "password",
-              label: "Password",
-              type: "password",
-              placeholder: "Your password",
+              id: "location",
+              label: "location",
+              placeholder: "Enter your location",
             },
             {
-              id: "Address",
-              label: "Address",
-              placeholder: "Enter your address",
+              id: "slogan",
+              label: "slogan",
+              placeholder: "Enter your slogan",
+            },
+            {
+              id: "website",
+              label: "website",
+              placeholder: "e.g., https://website.com",
+            },
+            {
+              id: "description",
+              label: "description",
+              placeholder: "Enter your description",
             },
           ].map((field) => (
             <div className="flex flex-col" key={field.id}>
@@ -126,15 +166,26 @@ const SignUp = () => {
 
           <div>
             <label
-              htmlFor="profilePicture"
+              htmlFor="logo"
               className="text-sm font-medium text-[#3E2069] mb-1"
             >
-              Profile Picture
+              Logo
             </label>
+            {currentLogo && (
+              <div className="mb-4">
+                <Image
+                  width={80}
+                  height={80}
+                  src={currentLogo}
+                  alt="Current  Logo"
+                  className="w-20 h-20 object-cover rounded-full"
+                />
+              </div>
+            )}
             <input
               type="file"
-              name="profilePicture"
-              id="profilePicture"
+              name="logo"
+              id="logo"
               onChange={handleFileChange}
               accept="image/*"
               className="block w-full p-2 border-2 border-[#A96EFF] rounded-lg bg-[#EFE7FF] text-[#3E2069]"
@@ -146,7 +197,7 @@ const SignUp = () => {
             className="w-full py-3 px-6 rounded-lg bg-gradient-to-r from-[#A96EFF] to-[#7B4FA2] text-white font-semibold shadow-lg hover:opacity-90 focus:ring-4 focus:ring-[#A96EFF] focus:outline-none"
             disabled={loading}
           >
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Updating..." : "Update Profile"}
           </button>
         </form>
         <ToastContainer />
@@ -155,4 +206,4 @@ const SignUp = () => {
   );
 };
 
-export default SignUp;
+export default EditCompanyProfile;

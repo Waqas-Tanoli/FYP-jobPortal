@@ -97,14 +97,17 @@ export default function UploadCV() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-700">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-[#8E3CCB] to-[#040c1b]">
+      <div className="max-w-lg w-full bg-[#2d0e3c] p-10 border border-[#8E3CCB] rounded-xl shadow-lg">
+        <h2 className="text-3xl font-semibold text-[#9B5BFF] text-center mb-8">
           Upload Your CV
         </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           <div>
-            <label className="block text-gray-700 mb-2" htmlFor="cv">
+            <label
+              className="block text-lg font-medium text-[#9B5BFF]"
+              htmlFor="cv"
+            >
               Select PDF File
             </label>
             <input
@@ -112,7 +115,7 @@ export default function UploadCV() {
               id="cv"
               accept=".pdf"
               onChange={handleFileChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-indigo-200"
+              className="w-full px-3 py-2 border border-[#9B5BFF] rounded-md focus:outline-none focus:ring-2 focus:ring-[#9B5BFF] text-white"
             />
             {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
           </div>
@@ -121,7 +124,7 @@ export default function UploadCV() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className={`w-full px-4 py-2 font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 transition duration-300 ${
+              className={`w-full px-4 py-2 font-semibold text-white bg-[#9B5BFF] rounded-md hover:bg-[#7f44c9] focus:outline-none focus:ring focus:ring-[#9B5BFF] transition duration-300 ${
                 isSubmitting ? "opacity-50 cursor-not-allowed" : ""
               }`}
             >
@@ -133,7 +136,7 @@ export default function UploadCV() {
         {uploadedUrl && (
           <div className="mt-4">
             <p className="text-green-600">File uploaded:</p>
-            <p className="text-gray-700">CV : {originalFileName}</p>{" "}
+            <p className="text-[#9B5BFF]">CV : {originalFileName}</p>
             {/* Display original file name */}
             <div className="mt-4">
               <a
@@ -141,7 +144,7 @@ export default function UploadCV() {
                 target="_blank"
                 rel="noopener noreferrer"
                 download={originalFileName}
-                className="inline-block px-4 py-2 bg-indigo-600 text-white font-semibold rounded-md hover:bg-indigo-500 focus:outline-none focus:ring focus:ring-indigo-300 transition duration-300"
+                className="inline-block px-4 py-2 bg-[#9B5BFF] text-white font-semibold rounded-md hover:bg-[#7f44c9] focus:outline-none focus:ring focus:ring-[#9B5BFF] transition duration-300"
               >
                 Download CV
               </a>
