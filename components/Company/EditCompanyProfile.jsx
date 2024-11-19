@@ -88,9 +88,7 @@ const EditCompanyProfile = () => {
       });
 
       toast.success("Profile updated successfully!");
-      setCurrentProfilePicture(
-        uploadedImage ? uploadedImage.url : currentProfilePicture
-      );
+      setCurrentLogo(uploadedImage ? uploadedImage.url : currentLogo);
     } catch (error) {
       console.error("Error updating profile:", error);
       toast.error("Failed to update profile. Please try again.");

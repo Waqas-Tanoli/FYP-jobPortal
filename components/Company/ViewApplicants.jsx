@@ -12,11 +12,15 @@ import {
   FaFileDownload,
 } from "react-icons/fa";
 import { MdOutlineFileDownload } from "react-icons/md";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
+
 const ViewApplicants = () => {
   const [isCompany, setIsCompany] = useState(null);
   const [jobs, setJobs] = useState([]);
   const [applicants, setApplicants] = useState([]);
   const [userId, setUserId] = useState(null);
+  const router = useRouter();
 
   // Fetch user data from API
   useEffect(() => {
@@ -72,6 +76,54 @@ const ViewApplicants = () => {
     }
   };
 
+  // Update applicant status
+  const updateApplicantStatus = async (applicantId, jobId, status, userId) => {
+    try {
+      const applicantIdStr = String(applicantId);
+      const jobIdStr = String(jobId);
+      const userIdStr = String(userId);
+
+      if (!applicantIdStr || !jobIdStr || !userIdStr || !status) {
+        throw new Error("Invalid data for applicant, job, or company.");
+      }
+
+      const response = await axiosClient.put(`/apply-jobs/${applicantIdStr}`, {
+        data: {
+          Status: status,
+          JobId: jobIdStr,
+          CompanyId: userIdStr,
+        },
+      });
+
+      console.log("Applicant status updated successfully", response.data);
+      toast.success("Applicant status updated successfully!");
+      router.refresh("/view-applicants");
+    } catch (error) {
+      console.error(
+        "Error updating applicant status:",
+        error.response?.data?.error?.message || error.message
+      );
+      toast.error(
+        error.response?.data?.error?.message ||
+          "Failed to update applicant status!"
+      );
+    }
+  };
+
+  const onChange = (applicant, newStatus) => {
+    if (applicant && applicant.id && applicant.JobId && userId) {
+      updateApplicantStatus(
+        String(applicant.id),
+        String(applicant.JobId),
+        newStatus,
+        String(userId)
+      );
+    } else {
+      console.error("Invalid data for applicant, job, or company.");
+      toast.error("Invalid data for applicant, job, or company.");
+    }
+  };
+
   // Open CV in a new tab
   const openCV = (cvUrl) => {
     window.open(cvUrl, "_blank");
@@ -89,14 +141,14 @@ const ViewApplicants = () => {
             Your Job Applicants
           </h2>
           {applicants.length > 0 ? (
-            <ul className="space-y-6">
+            <ul className="space-y-8">
               {applicants.map((applicant) => (
                 <li
                   key={applicant.id}
                   className="bg-white shadow-lg rounded-lg p-8 border border-gray-200 hover:shadow-2xl transform transition-all duration-200 hover:scale-105"
                 >
-                  <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center space-x-4">
+                  <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-center space-x-6">
                       <FaUser className="text-indigo-500 text-2xl" />
                       <p className="text-xl font-semibold text-gray-800">
                         {
@@ -116,7 +168,7 @@ const ViewApplicants = () => {
                     </p>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-6 mb-4">
+                  <div className="grid grid-cols-2 gap-8 mb-6">
                     <p className="text-gray-700">
                       <FaEnvelope className="inline mr-2 text-indigo-500" />
                       Email:{" "}
@@ -155,6 +207,31 @@ const ViewApplicants = () => {
                         {applicant?.attributes?.Status}
                       </span>
                     </p>
+
+                    {/* Dropdown for changing status merged into grid */}
+                    <div className="text-gray-700 ">
+                      <label className="text-gray-800 font-medium">
+                        <span className="mr-2">Change Status:</span>
+                        <select
+                          value={applicant?.attributes?.Status}
+                          onChange={(e) =>
+                            onChange(
+                              {
+                                id: applicant.id,
+                                JobId: applicant?.attributes?.jobs?.data[0]?.id,
+                              },
+                              e.target.value
+                            )
+                          }
+                          className="p-3 pl-8 pr-4 bg-white border rounded-md text-gray-700 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="accepted">Accepted</option>
+                          <option value="rejected">Rejected</option>
+                        </select>
+                      </label>
+                    </div>
+
                     {applicant?.attributes?.users_permissions_users?.data[0]
                       ?.attributes?.cvUrl ? (
                       <button
@@ -164,27 +241,27 @@ const ViewApplicants = () => {
                               .attributes.cvUrl
                           )
                         }
-                        className="flex items-center text-blue-600 font-semibold hover:text-blue-800"
+                        className="flex items-center text-blue-600 font-semibold hover:text-blue-800 mt-6"
                       >
                         <MdOutlineFileDownload className="mr-2 text-2xl" />
                         Download CV
                       </button>
                     ) : (
-                      <p className="text-gray-500 mt-4 italic">
-                        CV not uploaded
-                      </p>
+                      <p className="text-red-600 mt-2">No CV uploaded</p>
                     )}
                   </div>
                 </li>
               ))}
             </ul>
           ) : (
-            <p className="text-gray-600 mt-4 text-center">No applicants yet.</p>
+            <p className="text-center text-lg text-gray-600">
+              No applicants yet
+            </p>
           )}
         </div>
       ) : (
-        <p className="text-red-500 text-center">
-          You are not authorized to view this page.
+        <p className="text-center text-xl text-red-600">
+          You are not authorized to view applicants
         </p>
       )}
     </div>

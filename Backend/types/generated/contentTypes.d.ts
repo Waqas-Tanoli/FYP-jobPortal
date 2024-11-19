@@ -511,13 +511,6 @@ export interface ApiJobJob extends Schema.CollectionType {
           localized: true;
         };
       }>;
-    slug: Attribute.UID &
-      Attribute.Required &
-      Attribute.SetPluginOptions<{
-        i18n: {
-          localized: true;
-        };
-      }>;
     jobs: Attribute.Relation<
       'api::job.job',
       'manyToMany',

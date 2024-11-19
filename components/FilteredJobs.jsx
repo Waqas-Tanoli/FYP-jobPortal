@@ -1,4 +1,3 @@
-// FilteredJobsPage.js
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +11,11 @@ const FilteredJobs = () => {
   const [totalJobs, setTotalJobs] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [salaryStats, setSalaryStats] = useState({
+    averageSalary: 0,
+    maxSalary: 0,
+    minSalary: 0,
+  });
 
   const searchParams = useSearchParams();
   const jobTitle = searchParams.get("title") || "";
@@ -20,6 +24,32 @@ const FilteredJobs = () => {
   const education = searchParams.get("education") || "";
   const experienceLevel = searchParams.get("experienceLevel") || "";
   const salary = searchParams.get("salary") || "";
+
+  // Function to calculate salary statistics
+  const calculateSalaryStats = (jobs) => {
+    if (!jobs || jobs.length === 0) {
+      return {
+        averageSalary: 0,
+        maxSalary: 0,
+        minSalary: 0,
+      };
+    }
+
+    const salaries = jobs
+      .map((job) => job.salary)
+      .filter((salary) => salary !== null && salary !== undefined);
+
+    const totalSalaries = salaries.reduce((acc, salary) => acc + salary, 0);
+    const maxSalary = Math.max(...salaries);
+    const minSalary = Math.min(...salaries);
+    const averageSalary = (totalSalaries / salaries.length).toFixed(2);
+
+    return {
+      averageSalary: parseFloat(averageSalary),
+      maxSalary,
+      minSalary,
+    };
+  };
 
   useEffect(() => {
     const fetchFilteredJobs = async () => {
@@ -41,6 +71,7 @@ const FilteredJobs = () => {
           })) || [];
         setJobs(jobData);
         setTotalJobs(response.meta?.pagination?.total || 0);
+        setSalaryStats(calculateSalaryStats(jobData));
         setLoading(false);
       } catch (error) {
         console.error("Error fetching filtered jobs:", error);
@@ -86,6 +117,34 @@ const FilteredJobs = () => {
       <p className="mb-4 text-lg font-semibold">
         {totalJobs} job{totalJobs !== 1 ? "s" : ""} found
       </p>
+      {totalJobs > 0 && (
+        <div className="mb-6 p-4 bg-[#8E3CCB] text-white rounded-xl shadow-2xl max-w-3xl mx-auto">
+          <h2 className="text-2xl font-semibold mb-4 text-center text-white shadow-md">
+            💼 Salary Insights
+          </h2>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="text-center bg-white text-gray-800 p-3 rounded-md shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300">
+              <h3 className="text-md font-semibold mb-1">Average Salary</h3>
+              <p className="text-xl font-bold text-[#8E3CCB]">
+                {salaryStats.averageSalary}K
+              </p>
+            </div>
+            <div className="text-center bg-white text-gray-800 p-3 rounded-md shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300">
+              <h3 className="text-md font-semibold mb-1">Maximum Salary</h3>
+              <p className="text-xl font-bold text-[#8E3CCB]">
+                {salaryStats.maxSalary}K
+              </p>
+            </div>
+            <div className="text-center bg-white text-gray-800 p-3 rounded-md shadow-md border border-gray-300 transform hover:scale-105 transition-transform duration-300">
+              <h3 className="text-md font-semibold mb-1">Minimum Salary</h3>
+              <p className="text-xl font-bold text-[#8E3CCB]">
+                {salaryStats.minSalary}K
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
         {jobs.length > 0 ? (
           jobs.map((job) => (

@@ -4,7 +4,7 @@ import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { signUpUser } from "@/app/api/auth";
-
+import { useRouter } from "next/navigation";
 const SignUp = () => {
   const [profilePicture, setProfilePicture] = useState(null);
 
@@ -16,6 +16,7 @@ const SignUp = () => {
     Address: "",
   });
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const handleFileChange = (e) => {
     setProfilePicture(e.target.files[0]);
@@ -33,6 +34,7 @@ const SignUp = () => {
 
     if (success) {
       toast.success("Registration successful!");
+      router.push("/Login");
 
       // Clear the form after success
       setFormData({
