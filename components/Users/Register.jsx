@@ -1,10 +1,9 @@
 "use client";
 
-import axiosClient from "@/app/_utils/axiosClient";
 import { useState } from "react";
-import Cookies from "js-cookie";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { signUpUser } from "@/app/api/auth";
 
 const SignUp = () => {
   const [profilePicture, setProfilePicture] = useState(null);
@@ -30,25 +29,9 @@ const SignUp = () => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      let uploadedImage = null;
-      if (profilePicture) {
-        const form = new FormData();
-        form.append("files", profilePicture);
-        const uploadRes = await axiosClient.post("/upload", form);
-        uploadedImage = uploadRes.data[0];
-      }
+    const { success, user, error } = await signUpUser(formData, profilePicture);
 
-      const registerRes = await axiosClient.post("/auth/local/register", {
-        ...formData,
-        profilePicture: uploadedImage ? uploadedImage.id : null,
-      });
-
-      const { jwt, user } = registerRes.data;
-
-      Cookies.set("jwt", jwt, { expires: 7 });
-      Cookies.set("user", JSON.stringify(user), { expires: 7 });
-
+    if (success) {
       toast.success("Registration successful!");
 
       // Clear the form after success
@@ -60,12 +43,12 @@ const SignUp = () => {
         Address: "",
       });
       setProfilePicture(null);
-    } catch (error) {
+    } else {
       toast.error("Error registering user. Please try again.");
-      console.error("Error registering user:", error);
-    } finally {
-      setLoading(false);
+      console.error("Registration error:", error);
     }
+
+    setLoading(false);
   };
 
   return (

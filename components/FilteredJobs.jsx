@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getFilteredJobs } from "@/app/api/jobs";
+import { applyForJob, getFilteredJobs } from "@/app/api/jobs";
 import Cookies from "js-cookie";
 import { toast } from "react-toastify";
 
@@ -62,10 +62,15 @@ const FilteredJobs = () => {
     }
 
     try {
-      await applyForJob(jobId, userId);
-      toast.success("You have successfully applied for the job!");
+      const applicationCreated = await applyForJob(jobId, userId);
+
+      if (applicationCreated) {
+        toast.success("You have successfully applied for the job!");
+      } else {
+        toast.error("You have already applied for this job.");
+      }
     } catch (error) {
-      toast.error("Error applying for job");
+      toast.error(error.message);
     }
   };
 
@@ -118,12 +123,6 @@ const FilteredJobs = () => {
                       className="bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors flex-1"
                     >
                       Apply for Job
-                    </button>
-                    <button
-                      onClick={() => handleJobClick(job.slug)}
-                      className="bg-gray-200 text-gray-800 py-2 px-4 rounded hover:bg-gray-300 transition-colors flex-1"
-                    >
-                      View Details
                     </button>
                   </div>
                 </div>

@@ -54,7 +54,6 @@ const Header = () => {
   };
 
   if (isLoading) {
-    // loading spinner while checking token or after login form submission
     return (
       <div className="flex justify-center items-center min-h-screen bg-gray-100">
         <ClipLoader color={"#4F46E5"} size={50} />{" "}

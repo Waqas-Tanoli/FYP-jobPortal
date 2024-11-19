@@ -20,7 +20,7 @@ export default function RootLayout({ children }) {
         <LoadingProvider>
           <PreHeader />
           <Header />
-          <main>{children}</main>
+          {children}
           <Footer />
           <ToastContainer
             position="top-right"

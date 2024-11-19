@@ -67,6 +67,7 @@ const Jobs = () => {
         setIsLoggedIn(false);
         setIsCompany(false);
         setIsLoading(false);
+        toast.info("Login to view jobs");
       }
     };
 

@@ -23,5 +23,6 @@ export const config = {
     "/CompanyProfile",
     "/applied_jobs",
     "/Edit-Com-Prof",
+    "/edit-job/[jobId]",
   ],
 };

@@ -1,5 +1,4 @@
 import axiosClient from "../_utils/axiosClient";
-import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 export const getJobs = async () => {
@@ -151,25 +150,3 @@ export const updateJobEntry = async (jobId, updatedJobData) => {
   const response = await axiosClient.put(`/jobs/${jobId}`, updatedJobData);
   return response.data;
 };
-
-{
-  /*
- export const fetchAppliedJobs = async (userId) => {
-  try {
-    const response = await axiosClient.get(
-      `/apply-jobs?filters[users_permissions_users][id][$eq]=${userId}&populate[jobs][populate]=*`
-    );
-    console.log("API Response:", response);
-    return response.data;
-  } catch (error) {
-    console.error(
-      "Error in API call:",
-      error.response ? error.response.data : error.message
-    );
-    throw error;
-  }
-}; 
-  
-  
-  */
-}

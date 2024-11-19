@@ -6,9 +6,9 @@ const AboutUs = () => {
   const teamMember = {
     name: "Waqas Ahmed",
     role: "CEO",
-    image: "/profile.png", // Ensure this path is correct
+    image: "/CEO.jpg", // Ensure the image is placed in the `public` folder
     description:
-      "Waqas Ahmed is a visionary leader with a passion for technology and innovation. She has over 10 years of experience in the industry and leads our team with enthusiasm.",
+      "Waqas Ahmed is a visionary leader with a passion for technology and innovation. He has over 10 years of experience in the industry and leads our team with enthusiasm.",
   };
 
   return (
@@ -33,13 +33,16 @@ const AboutUs = () => {
         </h3>
         <div className="flex justify-center mb-12">
           <div className="bg-white shadow-lg rounded-lg overflow-hidden transition-transform transform hover:scale-105 max-w-xs hover:shadow-xl">
-            <Image
-              height={200}
-              width={200}
-              src={teamMember.image}
-              alt={teamMember.name}
-              className="w-full h-52 object-cover rounded-t-lg transition-transform duration-200 hover:scale-110"
-            />
+            <div className="relative w-full h-72">
+              <Image
+                src={teamMember.image}
+                alt={teamMember.name}
+                layout="fill"
+                objectFit="cover"
+                className="rounded-t-lg transition-transform duration-200 hover:scale-105"
+                priority
+              />
+            </div>
             <div className="p-6">
               <h4 className="text-xl font-semibold text-gray-800 mb-2">
                 {teamMember.name}
